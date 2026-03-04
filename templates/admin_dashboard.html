@@ -1,0 +1,503 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard — Sunexa{% endblock %}
+
+{% block body %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">
+      <div class="logo-icon" style="background:linear-gradient(135deg,#ff5050,#ff8c00)"><i class="bi bi-shield-lock"></i></div>
+      <span>Sunexa Admin</span>
+    </div>
+    <nav class="admin-nav">
+      <a href="#statsSection"   class="admin-nav-link active"><i class="bi bi-grid-1x2"></i> Overview</a>
+      <a href="#uploadSection"  class="admin-nav-link"><i class="bi bi-cloud-upload"></i> Upload Song</a>
+      <a href="#songsSection"   class="admin-nav-link"><i class="bi bi-music-note-list"></i> Songs</a>
+      <a href="#usersSection"   class="admin-nav-link"><i class="bi bi-people"></i> Users</a>
+      <a href="#premSection"    class="admin-nav-link"><i class="bi bi-crown"></i> Premium</a>
+      <a href="#logsSection"    class="admin-nav-link"><i class="bi bi-clock-history"></i> Activity Logs</a>
+      <a href="{{ url_for('index') }}" class="admin-nav-link"><i class="bi bi-arrow-left-circle"></i> Back to App</a>
+      <a href="{{ url_for('admin_logout') }}" class="admin-nav-link text-danger"><i class="bi bi-box-arrow-right"></i> Logout</a>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-header">
+      <div><h1>Dashboard</h1><p style="color:var(--text-muted);font-size:.83rem;margin-top:.15rem">{{ now.strftime('%A, %d %B %Y') if now else '' }} · Admin Panel</p></div>
+    </div>
+
+    <!-- ── Overview Stats ── -->
+    <section id="statsSection">
+      <div class="stats-grid">
+        <div class="stat-card" style="--cc:#7c3aed">
+          <div class="sc-ic"><i class="bi bi-music-note-beamed"></i></div>
+          <div><div class="sc-v">{{ songs|length }}</div><div class="sc-l">Total Songs</div></div>
+        </div>
+        <div class="stat-card" style="--cc:#06b6d4">
+          <div class="sc-ic"><i class="bi bi-people-fill"></i></div>
+          <div><div class="sc-v">{{ users|length }}</div><div class="sc-l">Registered Users</div></div>
+        </div>
+        <div class="stat-card" style="--cc:#f59e0b">
+          <div class="sc-ic"><i class="bi bi-crown-fill"></i></div>
+          <div>
+            <div class="sc-v">{{ users|selectattr('sub_status','equalto','active')|list|length }}</div>
+            <div class="sc-l">Premium Users</div>
+          </div>
+        </div>
+        <div class="stat-card" style="--cc:#22c55e">
+          <div class="sc-ic"><i class="bi bi-currency-rupee"></i></div>
+          <div>
+            <div class="sc-v">₹{{ "%.0f"|format(revenue.total or 0) }}</div>
+            <div class="sc-l">Total Revenue</div>
+          </div>
+        </div>
+        <div class="stat-card" style="--cc:#ec4899">
+          <div class="sc-ic"><i class="bi bi-heart-fill"></i></div>
+          <div><div class="sc-v">{{ users|sum(attribute='liked_count') }}</div><div class="sc-l">Total Likes</div></div>
+        </div>
+        <div class="stat-card" style="--cc:#a78bfa">
+          <div class="sc-ic"><i class="bi bi-play-circle-fill"></i></div>
+          <div><div class="sc-v">{{ users|sum(attribute='played_count') }}</div><div class="sc-l">Total Plays</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Upload ── -->
+    <section id="uploadSection" class="admin-card mt-4">
+      <h2><i class="bi bi-cloud-upload"></i> Upload New Song</h2>
+      <form method="POST" action="{{ url_for('admin_upload_song') }}" enctype="multipart/form-data" class="upload-form">
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label">Song Title</label><input type="text" name="title" class="form-control admin-input" placeholder="e.g. Neon Dreams" required/></div>
+          <div class="col-md-6"><label class="form-label">Artist Name</label><input type="text" name="artist" class="form-control admin-input" placeholder="e.g. Skyline Echo" required/></div>
+          <div class="col-md-6">
+            <label class="form-label">Genre / Category</label>
+            <select name="genre" class="form-control admin-input" required>
+              <option value="trending">🔥 Trending</option>
+              <option value="romantic">💕 Romantic</option>
+              <option value="sad">🌧️ Sad Songs</option>
+              <option value="remix">🎛️ Remix</option>
+              <option value="hot">🌶️ Hot &amp; Viral</option>
+              <option value="devotional">🙏 Devotional</option>
+              <option value="hiphop">🎤 Hip Hop</option>
+              <option value="party">🎉 Party</option>
+            </select>
+          </div>
+          <div class="col-md-6"><label class="form-label">Cover Image <small>(PNG/JPG)</small></label><input type="file" name="image" class="form-control admin-input" accept=".png,.jpg,.jpeg,.gif,.webp" required/></div>
+          <div class="col-md-6"><label class="form-label">Audio File <small>(MP3/WAV)</small></label><input type="file" name="song" class="form-control admin-input" accept=".mp3,.ogg,.wav,.flac" required/></div>
+          <div class="col-12"><button type="submit" class="btn-admin-upload"><i class="bi bi-cloud-upload"></i> Upload Song</button></div>
+        </div>
+      </form>
+    </section>
+
+    <!-- ── Songs ── -->
+    <section id="songsSection" class="admin-card mt-4">
+      <div class="sec-head"><h2><i class="bi bi-music-note-list"></i> All Songs</h2><span class="cnt-badge">{{ songs|length }}</span></div>
+      {% if songs %}
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead><tr><th>#</th><th>Cover</th><th>Title</th><th>Artist</th><th>Genre</th><th>Added</th><th>Action</th></tr></thead>
+          <tbody>
+            {% for song in songs %}
+            <tr>
+              <td class="mono text-muted">{{ loop.index }}</td>
+              <td><img src="{{ url_for('static', filename=song.image) }}" alt="{{ song.title }}" class="admin-cover" onerror="this.src='https://via.placeholder.com/44x44/1a1a2e/7c3aed?text=♪'"/></td>
+              <td class="fw-600">{{ song.title }}</td>
+              <td class="text-muted">{{ song.artist }}</td>
+              <td><span class="genre-chip">{{ song.genre or 'trending' }}</span></td>
+              <td class="mono text-muted small">{{ song.created_at.strftime('%d %b %Y') if song.created_at else '—' }}</td>
+              <td>
+                <form method="POST" action="{{ url_for('admin_delete_song') }}" style="display:inline" id="del-song-{{ song.id }}">
+                  <input type="hidden" name="song_id" value="{{ song.id }}"/>
+                  <button type="button" class="btn-delete"
+                    onclick="showConfirm('Delete Song?', '{{ song.title }} will be permanently removed.', 'danger', 'del-song-{{ song.id }}')">
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}<div class="empty-adm"><i class="bi bi-music-note-beamed"></i><p>No songs yet.</p></div>{% endif %}
+    </section>
+
+    <!-- ── Users ── -->
+    <section id="usersSection" class="admin-card mt-4">
+      <div class="sec-head"><h2><i class="bi bi-people"></i> All Users</h2><span class="cnt-badge">{{ users|length }}</span></div>
+      {% if users %}
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th><th>User</th><th>Email</th><th>Joined</th>
+              <th>❤️ Likes</th><th>▶️ Plays</th><th>🎵 Playlists</th>
+              <th>Premium</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in users %}
+            <tr>
+              <td class="mono text-muted">{{ loop.index }}</td>
+              <td>
+                <div class="u-cell">
+                  <div class="u-av">{{ u.name[0]|upper }}</div>
+                  <span class="fw-600">{{ u.name }}</span>
+                </div>
+              </td>
+              <td class="text-muted small">{{ u.email }}</td>
+              <td class="mono text-muted small">{{ u.created_at.strftime('%d %b %Y') if u.created_at else '—' }}</td>
+              <td class="text-center"><span class="chip chip-r">{{ u.liked_count }}</span></td>
+              <td class="text-center"><span class="chip chip-b">{{ u.played_count }}</span></td>
+              <td class="text-center"><span class="chip chip-p">{{ u.playlist_count }}</span></td>
+              <td class="text-center">
+                {% if u.sub_status == 'active' %}
+                  <span class="badge-prem">👑 {{ u.plan_name }}</span>
+                {% else %}
+                  <span class="badge-free">Free</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if u.played_count > 0 or u.liked_count > 0 %}
+                  <span class="sbadge sbadge-active">Active</span>
+                {% else %}
+                  <span class="sbadge sbadge-new">New</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="action-btns">
+                  {% if u.sub_status == 'active' %}
+                  <form method="POST" action="{{ url_for('admin_revoke_premium') }}" style="display:inline" id="revoke-{{ u.id }}">
+                    <input type="hidden" name="user_id" value="{{ u.id }}"/>
+                    <button type="button" class="btn-warn" title="Revoke Premium"
+                      onclick="showConfirm('Revoke Premium?', '{{ u.name }} will lose all premium benefits immediately.', 'warning', 'revoke-{{ u.id }}')">
+                      <i class="bi bi-crown-fill"></i>
+                    </button>
+                  </form>
+                  {% endif %}
+                  <form method="POST" action="{{ url_for('admin_delete_user') }}" style="display:inline" id="del-user-{{ u.id }}">
+                    <input type="hidden" name="user_id" value="{{ u.id }}"/>
+                    <button type="button" class="btn-delete" title="Delete User"
+                      onclick="showConfirm('Delete User?', '{{ u.name }} account and all data will be permanently deleted.', 'danger', 'del-user-{{ u.id }}')">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="users-foot">
+        <span><i class="bi bi-people-fill"></i> {{ users|length }} Total</span>
+        <span><i class="bi bi-crown-fill" style="color:#f59e0b"></i> {{ users|selectattr('sub_status','equalto','active')|list|length }} Premium</span>
+        <span><i class="bi bi-activity" style="color:#22c55e"></i> {{ users|selectattr('played_count','gt',0)|list|length }} Active</span>
+        <span><i class="bi bi-star" style="color:#06b6d4"></i> {{ users|selectattr('played_count','eq',0)|list|length }} New</span>
+      </div>
+      {% else %}<div class="empty-adm"><i class="bi bi-people"></i><p>No users yet.</p></div>{% endif %}
+    </section>
+
+    <!-- ── Premium Subscriptions ── -->
+    <section id="premSection" class="admin-card mt-4">
+      <div class="sec-head"><h2><i class="bi bi-crown-fill" style="color:#f59e0b"></i> Premium Subscriptions</h2>
+        <span class="cnt-badge">{{ users|selectattr('sub_status','equalto','active')|list|length }} Active</span>
+      </div>
+      {% set prem_users = users|selectattr('sub_status','equalto','active')|list %}
+      {% if prem_users %}
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr><th>User</th><th>Plan</th><th>Amount</th><th>Payment</th><th>Started</th><th>Expires</th><th>Revenue</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            {% for u in prem_users %}
+            <tr class="prem-row">
+              <td>
+                <div class="u-cell">
+                  <div class="u-av gold-av">{{ u.name[0]|upper }}</div>
+                  <div><div class="fw-600">{{ u.name }}</div><div class="small text-muted">{{ u.email }}</div></div>
+                </div>
+              </td>
+              <td><span class="badge-prem">{{ u.plan_name }}</span></td>
+              <td class="fw-600 text-gold">₹{{ "%.0f"|format(u.plan_price or 0) }}/mo</td>
+              <td class="text-muted">{{ u.payment_method|title if u.payment_method else '—' }}</td>
+              <td class="mono small text-muted">{{ u.started_at.strftime('%d %b %Y') if u.started_at else '—' }}</td>
+              <td class="mono small text-green">{{ u.expires_at.strftime('%d %b %Y') if u.expires_at else '—' }}</td>
+              <td class="fw-600">₹{{ "%.0f"|format(u.plan_price or 0) }}</td>
+              <td>
+                <form method="POST" action="{{ url_for('admin_revoke_premium') }}" id="revoke2-{{ u.id }}">
+                  <input type="hidden" name="user_id" value="{{ u.id }}"/>
+                  <button type="button" class="btn-warn"
+                    onclick="showConfirm('Revoke Premium?', '{{ u.name }} will lose all premium benefits immediately.', 'warning', 'revoke2-{{ u.id }}')">
+                    <i class="bi bi-x-circle"></i> Revoke
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="revenue-row">
+              <td colspan="6" class="text-right fw-600" style="text-align:right;padding-right:1rem">Total Monthly Revenue:</td>
+              <td class="fw-600 text-gold" style="font-size:1.1rem">₹{{ "%.0f"|format(revenue.total or 0) }}</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      {% else %}
+        <div class="empty-adm"><i class="bi bi-crown"></i><p>No premium subscribers yet.</p></div>
+      {% endif %}
+    </section>
+
+    <!-- ── Activity Logs ── -->
+    <section id="logsSection" class="admin-card mt-4">
+      <div class="sec-head"><h2><i class="bi bi-clock-history"></i> Activity Logs</h2></div>
+
+      <div class="log-tabs">
+        <button class="log-tab active" onclick="switchLogTab(this,'admin-logs')"><i class="bi bi-shield"></i> Admin Actions</button>
+        <button class="log-tab" onclick="switchLogTab(this,'user-logs')"><i class="bi bi-people"></i> User Activity</button>
+      </div>
+
+      <div id="admin-logs">
+        {% if admin_logs %}
+        <div class="log-list">
+          {% for log in admin_logs %}
+          <div class="log-row">
+            <div class="log-icon" style="background:rgba(255,80,50,.15)"><i class="bi bi-shield-fill" style="color:#ff5032"></i></div>
+            <div class="log-info">
+              <div class="log-action">{{ log.action|replace('_',' ')|title }}</div>
+              <div class="log-detail">{{ log.details or '—' }}</div>
+            </div>
+            <div class="log-meta">
+              <div class="log-time">{{ log.created_at.strftime('%d %b %Y, %H:%M') if log.created_at else '—' }}</div>
+              <div class="log-ip">{{ log.ip_address or '—' }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}<div class="empty-adm small-empty"><i class="bi bi-shield"></i><p>No admin actions yet.</p></div>{% endif %}
+      </div>
+
+      <div id="user-logs" style="display:none">
+        {% if user_activity %}
+        <div class="log-list">
+          {% for log in user_activity %}
+          <div class="log-row">
+            <div class="log-icon" style="background:rgba(124,58,237,.15)"><i class="bi bi-person-fill" style="color:#a78bfa"></i></div>
+            <div class="log-info">
+              <div class="log-action">
+                <span class="log-user">{{ log.user_name }}</span>
+                — {{ log.action|replace('_',' ')|title }}
+              </div>
+              <div class="log-detail">{{ log.details or '—' }}</div>
+            </div>
+            <div class="log-meta">
+              <div class="log-time">{{ log.created_at.strftime('%d %b %Y, %H:%M') if log.created_at else '—' }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}<div class="empty-adm small-empty"><i class="bi bi-people"></i><p>No user activity yet.</p></div>{% endif %}
+      </div>
+
+    </section>
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════
+     CUSTOM CONFIRM MODAL
+══════════════════════════════════════ -->
+<div class="cm-overlay" id="cmOverlay">
+  <div class="cm-box">
+    <div class="cm-icon-wrap" id="cmIconWrap">
+      <i id="cmIcon"></i>
+    </div>
+    <h3 class="cm-title" id="cmTitle"></h3>
+    <p class="cm-desc"  id="cmDesc"></p>
+    <div class="cm-btns">
+      <button class="cm-cancel" onclick="hideConfirm()">
+        <i class="bi bi-x-lg"></i> Cancel
+      </button>
+      <button class="cm-confirm" id="cmConfirmBtn" onclick="doConfirm()">
+        <i class="bi bi-check-lg"></i> <span id="cmConfirmTxt">Confirm</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ── Stats ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.9rem;}
+.stat-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.4rem;display:flex;align-items:center;gap:.9rem;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--cc);}
+.sc-ic{width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:1.15rem;color:var(--cc);}
+.sc-v{font-size:1.7rem;font-weight:800;line-height:1;}
+.sc-l{font-size:.75rem;color:var(--text-muted);margin-top:.15rem;font-weight:500;}
+/* ── Sections ── */
+.sec-head{display:flex;align-items:center;gap:.7rem;margin-bottom:1.2rem;}
+.sec-head h2{margin:0;}
+.cnt-badge{background:rgba(124,58,237,.2);color:#a78bfa;border:1px solid rgba(124,58,237,.3);border-radius:40px;padding:.15rem .7rem;font-size:.76rem;font-weight:700;}
+.u-cell{display:flex;align-items:center;gap:.65rem;}
+.u-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;color:#fff;flex-shrink:0;}
+.gold-av{background:linear-gradient(135deg,#f59e0b,#ef4444) !important;}
+.chip{display:inline-flex;align-items:center;justify-content:center;min-width:26px;padding:.18rem .5rem;border-radius:6px;font-size:.78rem;font-weight:700;font-family:'DM Mono',monospace;}
+.chip-r{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.18);}
+.chip-b{background:rgba(6,182,212,.12);color:#22d3ee;border:1px solid rgba(6,182,212,.18);}
+.chip-p{background:rgba(124,58,237,.12);color:#a78bfa;border:1px solid rgba(124,58,237,.18);}
+.badge-prem{display:inline-flex;align-items:center;padding:.22rem .7rem;border-radius:40px;font-size:.73rem;font-weight:700;background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3);}
+.badge-free{display:inline-flex;align-items:center;padding:.22rem .7rem;border-radius:40px;font-size:.73rem;font-weight:600;background:rgba(255,255,255,.05);color:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.08);}
+.sbadge{display:inline-flex;align-items:center;padding:.22rem .7rem;border-radius:40px;font-size:.72rem;font-weight:700;}
+.sbadge-active{background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.2);}
+.sbadge-new{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.2);}
+.action-btns{display:flex;gap:.4rem;align-items:center;}
+.btn-warn{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);color:#f59e0b;border-radius:6px;padding:.3rem .6rem;cursor:pointer;font-size:.82rem;display:flex;align-items:center;gap:.3rem;transition:background .2s;}
+.btn-warn:hover{background:rgba(245,158,11,.25);}
+.prem-row{background:rgba(245,158,11,.03);}
+.text-gold{color:#fbbf24 !important;}
+.text-green{color:#22c55e !important;}
+.revenue-row td{border-top:2px solid rgba(245,158,11,.25) !important;padding-top:.9rem !important;}
+.users-foot{display:flex;gap:1.5rem;padding:.9rem 0 0;border-top:1px solid var(--border);margin-top:.8rem;flex-wrap:wrap;}
+.users-foot span{display:flex;align-items:center;gap:.45rem;font-size:.82rem;color:var(--text-muted);}
+/* ── Logs ── */
+.log-tabs{display:flex;gap:.4rem;margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:.8rem;}
+.log-tab{display:flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.45);padding:.45rem 1rem;border-radius:8px;cursor:pointer;font-family:inherit;font-size:.83rem;font-weight:600;transition:all .2s;}
+.log-tab:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);}
+.log-tab.active{background:rgba(124,58,237,.2);border-color:rgba(124,58,237,.4);color:#a78bfa;}
+.log-list{display:flex;flex-direction:column;gap:.4rem;max-height:400px;overflow-y:auto;}
+.log-row{display:flex;align-items:flex-start;gap:.9rem;padding:.75rem .9rem;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);border-radius:10px;transition:background .2s;}
+.log-row:hover{background:rgba(255,255,255,.05);}
+.log-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.log-info{flex:1;overflow:hidden;}
+.log-action{font-size:.86rem;font-weight:600;margin-bottom:.15rem;}
+.log-user{color:#a78bfa;}
+.log-detail{font-size:.76rem;color:rgba(255,255,255,.35);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.log-meta{text-align:right;flex-shrink:0;}
+.log-time{font-size:.75rem;color:rgba(255,255,255,.3);font-family:'DM Mono',monospace;}
+.log-ip{font-size:.7rem;color:rgba(255,255,255,.2);margin-top:.1rem;}
+.empty-adm{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem;color:var(--text-muted);gap:.7rem;text-align:center;}
+.empty-adm i{font-size:2rem;}
+.small-empty{padding:1.5rem;flex-direction:row;font-size:.85rem;}
+.genre-chip{display:inline-flex;align-items:center;padding:.18rem .6rem;border-radius:40px;font-size:.72rem;font-weight:700;background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.2);}
+.mono{font-family:'DM Mono',monospace;}
+.mt-4{margin-top:1.4rem;}
+.text-right{text-align:right;}
+
+/* ══════════════════════════
+   CUSTOM CONFIRM MODAL
+══════════════════════════ */
+.cm-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.78);
+  backdrop-filter: blur(10px);
+  z-index: 9999;
+  display: none; align-items: center; justify-content: center;
+}
+.cm-overlay.show { display: flex; }
+
+.cm-box {
+  background: #0f0f1f;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 22px;
+  padding: 2.4rem 2rem 2rem;
+  width: min(420px, 92vw);
+  text-align: center;
+  animation: cmPop .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes cmPop {
+  from { opacity:0; transform: scale(.82) translateY(28px); }
+  to   { opacity:1; transform: none; }
+}
+.cm-icon-wrap {
+  width: 70px; height: 70px; border-radius: 50%;
+  margin: 0 auto 1.4rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+}
+.cm-icon-wrap.danger  { background:rgba(239,68,68,.15);  border:2px solid rgba(239,68,68,.3);  color:#f87171; }
+.cm-icon-wrap.warning { background:rgba(245,158,11,.15); border:2px solid rgba(245,158,11,.3); color:#fbbf24; }
+.cm-title { font-size:1.2rem; font-weight:800; color:#f1f0fa; margin-bottom:.5rem; }
+.cm-desc  { font-size:.87rem; color:rgba(255,255,255,.4); line-height:1.6; margin-bottom:1.9rem; }
+.cm-btns  { display:flex; gap:.8rem; }
+.cm-cancel {
+  flex:1; padding:.76rem;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+  border-radius:11px; color:rgba(255,255,255,.55);
+  font-family:inherit; font-size:.9rem; font-weight:600; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:.4rem;
+  transition:all .2s;
+}
+.cm-cancel:hover { background:rgba(255,255,255,.13); color:#fff; }
+.cm-confirm {
+  flex:1; padding:.76rem; border:none; border-radius:11px;
+  font-family:inherit; font-size:.9rem; font-weight:700; cursor:pointer; color:#fff;
+  display:flex; align-items:center; justify-content:center; gap:.4rem;
+  transition:filter .2s, transform .2s;
+}
+.cm-confirm.danger  { background:linear-gradient(135deg,#ef4444,#dc2626); box-shadow:0 4px 18px rgba(239,68,68,.4); }
+.cm-confirm.warning { background:linear-gradient(135deg,#f59e0b,#d97706); box-shadow:0 4px 18px rgba(245,158,11,.4); }
+.cm-confirm:hover   { filter:brightness(1.12); transform:translateY(-1px); }
+</style>
+
+<script>
+/* ── Log Tab Switcher ── */
+function switchLogTab(btn, target) {
+  document.querySelectorAll('.log-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('admin-logs').style.display = target === 'admin-logs' ? 'block' : 'none';
+  document.getElementById('user-logs').style.display  = target === 'user-logs'  ? 'block' : 'none';
+}
+
+/* ── Custom Confirm Modal ── */
+let _pendingFormId = null;
+
+function showConfirm(title, desc, type, formId) {
+  _pendingFormId = formId;
+
+  document.getElementById('cmTitle').textContent = title;
+  document.getElementById('cmDesc').textContent  = desc;
+
+  const wrap = document.getElementById('cmIconWrap');
+  const icon = document.getElementById('cmIcon');
+  const btn  = document.getElementById('cmConfirmBtn');
+  const txt  = document.getElementById('cmConfirmTxt');
+
+  wrap.className = 'cm-icon-wrap ' + type;
+  btn.className  = 'cm-confirm '   + type;
+
+  if (type === 'danger') {
+    icon.className  = 'bi bi-trash-fill';
+    txt.textContent = 'Yes, Delete';
+  } else {
+    icon.className  = 'bi bi-slash-circle-fill';
+    txt.textContent = 'Yes, Revoke';
+  }
+
+  document.getElementById('cmOverlay').classList.add('show');
+}
+
+function hideConfirm() {
+  document.getElementById('cmOverlay').classList.remove('show');
+  _pendingFormId = null;
+}
+
+function doConfirm() {
+  if (_pendingFormId) {
+    document.getElementById(_pendingFormId).submit();
+  }
+  hideConfirm();
+}
+
+/* Close on backdrop click */
+document.getElementById('cmOverlay').addEventListener('click', function(e) {
+  if (e.target === this) hideConfirm();
+});
+
+/* Close on Escape key */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') hideConfirm();
+});
+</script>
+
+{% endblock %}

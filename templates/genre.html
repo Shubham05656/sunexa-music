@@ -1,0 +1,459 @@
+{% extends 'base.html' %}
+{% block title %}{{ genre|title }} Songs — Sunexa{% endblock %}
+
+{% block body %}
+{% set meta = {
+  'trending': {'emoji':'🔥','label':'Trending Now','desc':'Hottest songs everyone is listening to right now','color':'#ff6b35,#f7c59f','bg':'rgba(255,107,53,.15)'},
+  'romantic': {'emoji':'💕','label':'Romantic Hits','desc':'Perfect songs for love and special moments','color':'#ff6b9d,#c44569','bg':'rgba(255,107,157,.15)'},
+  'sad':      {'emoji':'🌧️','label':'Sad Songs','desc':'Feel the emotions, let the music heal you','color':'#4facfe,#00f2fe','bg':'rgba(79,172,254,.15)'},
+  'remix':    {'emoji':'🎛️','label':'Remix Zone','desc':'Fresh remixes and mashups to vibe to','color':'#a18cd1,#fbc2eb','bg':'rgba(161,140,209,.15)'},
+  'hot':      {'emoji':'🌶️','label':'Hot & Viral','desc':'Viral tracks taking over the internet','color':'#f093fb,#f5576c','bg':'rgba(245,87,108,.15)'},
+  'devotional':{'emoji':'🙏','label':'Devotional','desc':'Spiritual music for inner peace','color':'#fddb92,#d1913c','bg':'rgba(253,219,146,.15)'},
+  'hiphop':   {'emoji':'🎤','label':'Hip Hop','desc':'Rap, beats and street vibes','color':'#30cfd0,#667eea','bg':'rgba(48,207,208,.15)'},
+  'party':    {'emoji':'🎉','label':'Party Anthems','desc':'Bangers to keep the energy high all night','color':'#43e97b,#38f9d7','bg':'rgba(67,233,123,.15)'}
+} %}
+{% set m = meta.get(genre, meta['trending']) %}
+
+<div class="app-shell">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="bi bi-soundwave"></i></div>
+      <span class="logo-text">Sunexa</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('index') }}" class="nav-link"><i class="bi bi-house-fill"></i> Home</a>
+      <a href="{{ url_for('index') }}" class="nav-link"><i class="bi bi-search"></i> Search</a>
+      <a href="#" class="nav-link" data-bs-toggle="offcanvas" data-bs-target="#libraryCanvas"><i class="bi bi-collection-fill"></i> Your Library</a>
+    </nav>
+    <div class="sidebar-section">
+      <div class="sidebar-section-header"><span>Genres</span></div>
+      {% for gname, ginfo in meta.items() %}
+      <a href="{{ url_for('genre_page', genre_name=gname) }}"
+         class="genre-side-link {% if gname==genre %}active{% endif %}">
+        <span>{{ ginfo.emoji }}</span> {{ ginfo.label }}
+      </a>
+      {% endfor %}
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-header"><span>Playlists</span></div>
+      <div class="playlist-list">
+        {% for pl in playlists %}
+        <div class="playlist-item"><i class="bi bi-music-note-list"></i><span>{{ pl.name }}</span></div>
+        {% else %}
+        <p class="text-muted small px-2">No playlists yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrapper">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+        <a href="{{ url_for('index') }}" class="back-home-btn"><i class="bi bi-arrow-left"></i></a>
+      </div>
+      <div class="topbar-right">
+        <a href="{{ url_for('premium') }}" class="btn-premium"><i class="bi bi-lightning-charge-fill"></i> Premium</a>
+        <div class="user-menu dropdown">
+          <button class="user-avatar dropdown-toggle" data-bs-toggle="dropdown">{{ session.user_name[0]|upper }}</button>
+          <ul class="dropdown-menu dropdown-menu-end dark-dropdown">
+            <li><span class="dropdown-item-text fw-600">{{ session.user_name }}</span></li>
+            <li><hr class="dropdown-divider"/></li>
+            <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+
+      <!-- Genre Hero Banner -->
+      <div class="genre-hero" style="background:linear-gradient(135deg, {{ m.bg }}, rgba(8,8,16,0) 70%), linear-gradient(135deg, {{ m.color.split(',')[0] }}22, {{ m.color.split(',')[1] }}11);">
+        <div class="gh-left">
+          <div class="gh-emoji">{{ m.emoji }}</div>
+          <div>
+            <div class="gh-tag">Genre</div>
+            <h1 class="gh-title" style="background:linear-gradient(135deg,{{ m.color }});-webkit-background-clip:text;-webkit-text-fill-color:transparent;">{{ m.label }}</h1>
+            <p class="gh-desc">{{ m.desc }}</p>
+            <div class="gh-meta">
+              <span><i class="bi bi-music-note-beamed"></i> {{ songs|length }} Songs</span>
+              {% if songs %}
+              <button class="gh-play-all" onclick="playAll()" style="background:linear-gradient(135deg,{{ m.color }})">
+                <i class="bi bi-play-fill"></i> Play All
+              </button>
+              <button class="gh-shuffle" onclick="shuffleAll()">
+                <i class="bi bi-shuffle"></i> Shuffle
+              </button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="gh-art">
+          {% for song in songs[:4] %}
+          <img src="{{ url_for('static', filename=song.image) }}"
+               onerror="this.src='https://via.placeholder.com/80x80/0f0f1a/7c3aed?text=♪'"
+               style="--i:{{ loop.index0 }}" />
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Songs Section -->
+      {% if songs %}
+
+      <!-- List View (like real music apps) -->
+      <div class="genre-toolbar">
+        <span class="gt-count">{{ songs|length }} songs</span>
+        <div class="gt-views">
+          <button class="gtv-btn active" id="btnList" onclick="setView('list',this)"><i class="bi bi-list-ul"></i></button>
+          <button class="gtv-btn" id="btnGrid" onclick="setView('grid',this)"><i class="bi bi-grid"></i></button>
+        </div>
+      </div>
+
+      <!-- LIST VIEW -->
+      <div id="listView">
+        <div class="genre-list-header">
+          <span class="gl-num">#</span>
+          <span>Title</span>
+          <span>Artist</span>
+          <span class="gl-dur"><i class="bi bi-heart"></i></span>
+          <span class="gl-dur"><i class="bi bi-clock"></i></span>
+        </div>
+        {% for song in songs %}
+        <div class="genre-list-row" id="song-row-{{ song.id }}"
+             onclick="playGenreSong({{ song.id }},'{{ song.title|e }}','{{ song.artist|e }}','{{ url_for('static', filename=song.image) }}','{{ url_for('static', filename=song.file_path) }}')">
+          <div class="glr-num">
+            <span class="glr-index">{{ loop.index }}</span>
+            <button class="glr-play"><i class="bi bi-play-fill"></i></button>
+          </div>
+          <div class="glr-song">
+            <img src="{{ url_for('static', filename=song.image) }}"
+                 onerror="this.src='https://via.placeholder.com/44x44/0f0f1a/7c3aed?text=♪'" />
+            <div>
+              <p class="glr-title">{{ song.title }}</p>
+              <p class="glr-artist">{{ song.artist }}</p>
+            </div>
+          </div>
+          <span class="glr-aname">{{ song.artist }}</span>
+          <button class="like-btn-row {% if song.id in liked_ids %}liked{% endif %}"
+                  onclick="event.stopPropagation();toggleLike({{ song.id }},this)">
+            <i class="bi {% if song.id in liked_ids %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+          </button>
+          <span class="glr-dur" id="dur-{{ song.id }}">—</span>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- GRID VIEW (hidden by default) -->
+      <div id="gridView" class="song-grid" style="display:none">
+        {% for song in songs %}
+        <div class="song-card" onclick="playGenreSong({{ song.id }},'{{ song.title|e }}','{{ song.artist|e }}','{{ url_for('static', filename=song.image) }}','{{ url_for('static', filename=song.file_path) }}')">
+          <div class="card-img-wrap">
+            <img src="{{ url_for('static', filename=song.image) }}"
+                 alt="{{ song.title }}"
+                 onerror="this.src='https://via.placeholder.com/200x200/0f0f1a/7c3aed?text=♪'" />
+            <div class="card-play-overlay"><i class="bi bi-play-fill"></i></div>
+          </div>
+          <div class="card-info">
+            <p class="card-title">{{ song.title }}</p>
+            <p class="card-artist">{{ song.artist }}</p>
+          </div>
+          <button class="like-btn {% if song.id in liked_ids %}liked{% endif %}"
+                  onclick="event.stopPropagation();toggleLike({{ song.id }},this)">
+            <i class="bi {% if song.id in liked_ids %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+          </button>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% else %}
+      <div class="genre-empty">
+        <div class="ge-icon">{{ m.emoji }}</div>
+        <h3>No {{ m.label }} songs yet</h3>
+        <p>Admin can upload songs to this category from the admin panel.</p>
+        <a href="{{ url_for('index') }}" class="ge-btn">Go to Home</a>
+      </div>
+      {% endif %}
+
+    </main>
+  </div>
+
+  <!-- Player Bar -->
+  <footer class="player-bar" id="playerBar">
+    <div class="player-song-info">
+      <img id="playerImg" src="https://via.placeholder.com/52x52/0f0f1a/7c3aed?text=♪" alt="cover"/>
+      <div class="player-text">
+        <p id="playerTitle">Select a song</p>
+        <p id="playerArtist" class="text-muted small">—</p>
+      </div>
+      <button class="like-btn" id="playerLikeBtn" onclick="toggleLikePlayer()">
+        <i class="bi bi-heart" id="playerLikeIcon"></i>
+      </button>
+    </div>
+    <div class="player-controls">
+      <button class="ctrl-btn" onclick="prevSong()"><i class="bi bi-skip-start-fill"></i></button>
+      <button class="ctrl-btn play-pause-btn" id="playPauseBtn" onclick="togglePlay()">
+        <i class="bi bi-play-fill" id="playPauseIcon"></i>
+      </button>
+      <button class="ctrl-btn" onclick="nextSong()"><i class="bi bi-skip-end-fill"></i></button>
+      <div class="progress-wrap">
+        <span id="currentTime">0:00</span>
+        <input type="range" id="seekBar" min="0" max="100" value="0" oninput="seekTo(this.value)"/>
+        <span id="totalTime">0:00</span>
+      </div>
+    </div>
+    <div class="player-extras">
+      <button class="ctrl-btn" onclick="toggleShuffle()" id="shuffleBtn"><i class="bi bi-shuffle"></i></button>
+      <button class="ctrl-btn" onclick="toggleRepeat()" id="repeatBtn"><i class="bi bi-repeat"></i></button>
+      <div class="volume-wrap">
+        <i class="bi bi-volume-up" id="volIcon" onclick="toggleMute()"></i>
+        <input type="range" id="volumeBar" min="0" max="100" value="80" oninput="setVolume(this.value)"/>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- Library Offcanvas -->
+<div class="offcanvas offcanvas-start dark-offcanvas" tabindex="-1" id="libraryCanvas">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title"><i class="bi bi-collection-fill me-2"></i>Your Library</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    {% for pl in playlists %}
+    <div class="library-item"><i class="bi bi-music-note-list"></i><span>{{ pl.name }}</span></div>
+    {% else %}
+    <p class="text-muted small">No playlists yet.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<audio id="audioPlayer" preload="metadata"></audio>
+
+<style>
+/* ── Genre Sidebar Links ── */
+.genre-side-link{display:flex;align-items:center;gap:.6rem;padding:.5rem .8rem;border-radius:8px;color:var(--text-secondary);font-size:.87rem;font-weight:500;text-decoration:none;transition:background .2s,color .2s;}
+.genre-side-link:hover,.genre-side-link.active{background:var(--bg-hover);color:var(--text-primary);}
+.genre-side-link.active{background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(6,182,212,.1));border-left:2px solid var(--accent);}
+.back-home-btn{display:flex;align-items:center;justify-content:center;width:34px;height:34px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:50%;color:var(--text-secondary);text-decoration:none;transition:all .2s;}
+.back-home-btn:hover{background:var(--bg-hover);color:var(--text-primary);}
+
+/* ── Genre Hero ── */
+.genre-hero{display:flex;align-items:center;justify-content:space-between;padding:2.5rem 2rem;border-radius:20px;margin-bottom:2rem;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.06);gap:1.5rem;}
+.genre-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(8,8,16,.9) 40%,transparent);pointer-events:none;}
+.gh-left{position:relative;z-index:1;display:flex;align-items:flex-start;gap:1.5rem;}
+.gh-emoji{font-size:4rem;line-height:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));}
+.gh-tag{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.4rem;}
+.gh-title{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.5rem;line-height:1.05;}
+.gh-desc{color:rgba(255,255,255,.45);font-size:.9rem;margin-bottom:1.2rem;}
+.gh-meta{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;}
+.gh-meta>span{font-size:.82rem;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:.4rem;}
+.gh-play-all{display:flex;align-items:center;gap:.5rem;color:#fff;border:none;border-radius:40px;padding:.55rem 1.4rem;font-family:inherit;font-size:.88rem;font-weight:700;cursor:pointer;transition:filter .2s,transform .2s;box-shadow:0 4px 16px rgba(0,0,0,.3);}
+.gh-play-all:hover{filter:brightness(1.12);transform:translateY(-1px);}
+.gh-shuffle{display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.7);border-radius:40px;padding:.55rem 1.2rem;font-family:inherit;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.gh-shuffle:hover{background:rgba(255,255,255,.14);color:#fff;}
+.gh-art{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:6px;flex-shrink:0;}
+.gh-art img{width:80px;height:80px;object-fit:cover;border-radius:8px;transition:transform .3s;animation:artPop .5s calc(var(--i)*.08s) ease both;}
+@keyframes artPop{from{opacity:0;transform:scale(.85) translateY(10px)}to{opacity:1;transform:none}}
+.gh-art img:hover{transform:scale(1.05);}
+
+/* ── Toolbar ── */
+.genre-toolbar{display:flex;align-items:center;justify-content:space-between;padding:.5rem 0 1rem;border-bottom:1px solid var(--border);margin-bottom:.5rem;}
+.gt-count{font-size:.82rem;color:var(--text-muted);}
+.gt-views{display:flex;gap:.3rem;}
+.gtv-btn{background:none;border:1px solid rgba(255,255,255,.08);color:var(--text-muted);width:30px;height:30px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .2s;}
+.gtv-btn:hover,.gtv-btn.active{background:rgba(255,255,255,.08);color:var(--text-primary);border-color:rgba(255,255,255,.15);}
+
+/* ── List View ── */
+.genre-list-header{display:grid;grid-template-columns:40px 1fr 140px 40px 60px;align-items:center;padding:.4rem 1rem;color:var(--text-muted);font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.05);}
+.gl-num{text-align:center;}.gl-dur{text-align:center;}
+.genre-list-row{display:grid;grid-template-columns:40px 1fr 140px 40px 60px;align-items:center;padding:.55rem 1rem;border-radius:8px;cursor:pointer;transition:background .15s;position:relative;}
+.genre-list-row:hover{background:rgba(255,255,255,.05);}
+.genre-list-row.playing{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);}
+.glr-num{display:flex;align-items:center;justify-content:center;position:relative;width:40px;}
+.glr-index{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--text-muted);}
+.glr-play{display:none;position:absolute;background:none;border:none;color:var(--text-primary);font-size:1rem;cursor:pointer;}
+.genre-list-row:hover .glr-index{display:none;}
+.genre-list-row:hover .glr-play{display:flex;align-items:center;justify-content:center;}
+.glr-song{display:flex;align-items:center;gap:.8rem;overflow:hidden;}
+.glr-song img{width:44px;height:44px;border-radius:6px;object-fit:cover;flex-shrink:0;}
+.glr-title{font-weight:600;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.glr-artist{font-size:.76rem;color:var(--text-secondary);}
+.glr-aname{font-size:.83rem;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.like-btn-row{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.9rem;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s,color .2s,transform .2s;}
+.genre-list-row:hover .like-btn-row,.like-btn-row.liked{opacity:1;}
+.like-btn-row.liked{color:#ef4444;}
+.like-btn-row:hover{transform:scale(1.2);}
+.glr-dur{text-align:center;font-size:.78rem;color:var(--text-muted);font-family:'DM Mono',monospace;}
+
+/* ── Empty State ── */
+.genre-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5rem 2rem;text-align:center;gap:1rem;}
+.ge-icon{font-size:4rem;}
+.genre-empty h3{font-size:1.3rem;font-weight:700;}
+.genre-empty p{color:var(--text-muted);font-size:.9rem;}
+.ge-btn{display:inline-flex;padding:.6rem 1.5rem;background:var(--accent);color:#fff;border-radius:40px;font-weight:600;font-size:.88rem;margin-top:.5rem;transition:filter .2s;}
+.ge-btn:hover{filter:brightness(1.12);color:#fff;}
+</style>
+
+<script>
+// Build song queue from this genre page
+const genreSongs = [
+  {% for song in songs %}
+  {
+    id:{{ song.id }},
+    title:'{{ song.title|e }}',
+    artist:'{{ song.artist|e }}',
+    image:'{{ url_for('static', filename=song.image) }}',
+    src:'{{ url_for('static', filename=song.file_path) }}'
+  }{% if not loop.last %},{% endif %}
+  {% endfor %}
+];
+
+let currentSongId = null;
+let currentIdx = -1;
+let isShuffle = false;
+let isRepeat = false;
+const audio = document.getElementById('audioPlayer');
+
+function playGenreSong(id, title, artist, imgSrc, fileSrc) {
+  currentSongId = id;
+  currentIdx = genreSongs.findIndex(s => s.id === id);
+
+  document.getElementById('playerTitle').textContent  = title;
+  document.getElementById('playerArtist').textContent = artist;
+  document.getElementById('playerImg').src = imgSrc;
+
+  audio.src = fileSrc;
+  audio.play().then(() => updatePlayIcon(true)).catch(() => {});
+
+  // Update row highlight
+  document.querySelectorAll('.genre-list-row').forEach(r => r.classList.remove('playing'));
+  const row = document.getElementById('song-row-' + id);
+  if (row) row.classList.add('playing');
+
+  // Track recently played
+  fetch('/api/recently-played', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({song_id: id})
+  }).catch(() => {});
+}
+
+function playAll() {
+  if (!genreSongs.length) return;
+  const s = genreSongs[0];
+  playGenreSong(s.id, s.title, s.artist, s.image, s.src);
+}
+
+function shuffleAll() {
+  if (!genreSongs.length) return;
+  const idx = Math.floor(Math.random() * genreSongs.length);
+  const s = genreSongs[idx];
+  playGenreSong(s.id, s.title, s.artist, s.image, s.src);
+  isShuffle = true;
+  document.getElementById('shuffleBtn')?.classList.add('active');
+}
+
+function updatePlayIcon(playing) {
+  const icon = document.getElementById('playPauseIcon');
+  if (icon) icon.className = playing ? 'bi bi-pause-fill' : 'bi bi-play-fill';
+}
+
+function togglePlay() {
+  if (!audio.src) return;
+  if (audio.paused) { audio.play().then(() => updatePlayIcon(true)); }
+  else { audio.pause(); updatePlayIcon(false); }
+}
+
+function nextSong() {
+  if (!genreSongs.length) return;
+  if (isShuffle) currentIdx = Math.floor(Math.random() * genreSongs.length);
+  else currentIdx = (currentIdx + 1) % genreSongs.length;
+  const s = genreSongs[currentIdx];
+  playGenreSong(s.id, s.title, s.artist, s.image, s.src);
+}
+
+function prevSong() {
+  if (!genreSongs.length) return;
+  if (audio.currentTime > 3) { audio.currentTime = 0; return; }
+  currentIdx = (currentIdx - 1 + genreSongs.length) % genreSongs.length;
+  const s = genreSongs[currentIdx];
+  playGenreSong(s.id, s.title, s.artist, s.image, s.src);
+}
+
+function toggleShuffle() {
+  isShuffle = !isShuffle;
+  document.getElementById('shuffleBtn')?.classList.toggle('active', isShuffle);
+}
+function toggleRepeat() {
+  isRepeat = !isRepeat;
+  document.getElementById('repeatBtn')?.classList.toggle('active', isRepeat);
+}
+
+// Audio events
+if (audio) {
+  audio.addEventListener('timeupdate', () => {
+    if (!audio.duration) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    const bar = document.getElementById('seekBar');
+    if (bar) { bar.value = pct; bar.style.setProperty('--seek-pct', pct + '%'); }
+    document.getElementById('currentTime').textContent = fmt(audio.currentTime);
+  });
+  audio.addEventListener('loadedmetadata', () => {
+    document.getElementById('totalTime').textContent = fmt(audio.duration);
+    // Also update dur in list
+    if (currentSongId) {
+      const el = document.getElementById('dur-' + currentSongId);
+      if (el) el.textContent = fmt(audio.duration);
+    }
+  });
+  audio.addEventListener('ended', () => {
+    if (isRepeat) { audio.currentTime = 0; audio.play(); }
+    else nextSong();
+  });
+  audio.volume = 0.8;
+}
+
+function seekTo(v) {
+  if (!audio.duration) return;
+  audio.currentTime = (v/100) * audio.duration;
+  document.getElementById('seekBar')?.style.setProperty('--seek-pct', v + '%');
+}
+
+let isMuted = false;
+function setVolume(v) { if(audio) audio.volume = v/100; updateVolIcon(v); document.getElementById('volumeBar')?.style.setProperty('--vol-pct',v+'%'); }
+function toggleMute() { if(!audio)return; isMuted=!isMuted; audio.muted=isMuted; const v=isMuted?0:audio.volume*100; const bar=document.getElementById('volumeBar'); if(bar){bar.value=v;bar.style.setProperty('--vol-pct',v+'%');} updateVolIcon(v); }
+function updateVolIcon(v) { const i=document.getElementById('volIcon'); if(!i)return; i.className=v==0?'bi bi-volume-mute':v<50?'bi bi-volume-down':'bi bi-volume-up'; }
+function fmt(s) { if(isNaN(s))return'0:00'; return Math.floor(s/60)+':'+Math.floor(s%60).toString().padStart(2,'0'); }
+
+// Like
+function toggleLike(songId, btn) {
+  fetch('/api/like-song', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({song_id:songId})})
+    .then(r=>r.json()).then(data=>{
+      // Update all like buttons for this song
+      document.querySelectorAll(`[onclick*="toggleLike(${songId}"]`).forEach(b=>{
+        b.classList.toggle('liked', data.liked);
+        b.querySelector('i').className = data.liked ? 'bi bi-heart-fill' : 'bi bi-heart';
+      });
+      if (songId === currentSongId) {
+        const pi = document.getElementById('playerLikeIcon');
+        if (pi) pi.className = data.liked ? 'bi bi-heart-fill' : 'bi bi-heart';
+        document.getElementById('playerLikeBtn')?.classList.toggle('liked', data.liked);
+      }
+    });
+}
+function toggleLikePlayer() { if(currentSongId) toggleLike(currentSongId, document.getElementById('playerLikeBtn')); }
+
+// View toggle
+function setView(view, btn) {
+  document.querySelectorAll('.gtv-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('listView').style.display = view==='list' ? 'block' : 'none';
+  document.getElementById('gridView').style.display = view==='grid' ? 'grid' : 'none';
+}
+
+function toggleSidebar() { document.getElementById('sidebar')?.classList.toggle('open'); }
+
+document.getElementById('volumeBar')?.style.setProperty('--vol-pct','80%');
+</script>
+{% endblock %}

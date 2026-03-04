@@ -1,0 +1,2 @@
+echo "" > static/uploads/images/.gitkeep
+echo "" > static/uploads/songs/.gitkeep

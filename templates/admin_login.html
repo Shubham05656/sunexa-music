@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Admin Login — Sunexa{% endblock %}
+
+{% block body %}
+<div class="auth-page admin-auth-page">
+  <div class="auth-bg-orbs">
+    <div class="orb orb-1" style="background:radial-gradient(circle, rgba(255,80,80,.4), transparent)"></div>
+    <div class="orb orb-2" style="background:radial-gradient(circle, rgba(255,140,0,.3), transparent)"></div>
+    <div class="orb orb-3" style="background:radial-gradient(circle, rgba(200,0,200,.25), transparent)"></div>
+  </div>
+
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-icon" style="background:linear-gradient(135deg,#ff5050,#ff8c00)"><i class="bi bi-shield-lock"></i></div>
+      <span class="logo-text">Admin</span>
+    </div>
+
+    <h2 class="auth-title">Admin Panel</h2>
+    <p class="auth-sub">Sunexa Music Management</p>
+
+    <form method="POST" action="{{ url_for('admin_login') }}" class="auth-form">
+      <div class="field-group">
+        <label>Username</label>
+        <div class="input-wrap">
+          <i class="bi bi-person-badge"></i>
+          <input type="text" name="username" placeholder="admin" required />
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <i class="bi bi-lock"></i>
+          <input type="password" name="password" placeholder="••••••••" required />
+        </div>
+      </div>
+      <button type="submit" class="btn-primary-auth" style="background:linear-gradient(135deg,#ff5050,#ff8c00)">
+        Enter Panel <i class="bi bi-arrow-right"></i>
+      </button>
+    </form>
+
+    <p class="auth-switch"><a href="{{ url_for('login') }}"><i class="bi bi-arrow-left"></i> Back to App</a></p>
+  </div>
+</div>
+{% endblock %}

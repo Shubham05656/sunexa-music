@@ -1,0 +1,671 @@
+{% extends 'base.html' %}
+{% block title %}Premium — Sunexa Music{% endblock %}
+
+{% block body %}
+<div class="premium-page">
+  <div class="prem-bg">
+    <div class="prem-orb o1"></div><div class="prem-orb o2"></div><div class="prem-orb o3"></div>
+  </div>
+  <nav class="prem-nav">
+    <a href="{{ url_for('index') }}" class="prem-logo">
+      <div class="logo-icon"><i class="bi bi-soundwave"></i></div><span>Sunexa</span>
+    </a>
+    <a href="{{ url_for('index') }}" class="prem-back"><i class="bi bi-arrow-left"></i> Back to App</a>
+  </nav>
+  <section class="prem-hero">
+    <div class="prem-badge"><i class="bi bi-lightning-charge-fill"></i> SUNEXA PREMIUM</div>
+    <h1 class="prem-headline">Music Without<br/><span class="gradient-text">Limits.</span></h1>
+    <p class="prem-sub">Ad-free listening, offline downloads, high-quality audio and exclusive features.</p>
+    <div class="prem-hero-btns">
+      <a href="#plans" class="btn-get-premium"><i class="bi bi-lightning-charge-fill"></i> Get Premium</a>
+      <a href="{{ url_for('index') }}" class="btn-ghost">Continue Free</a>
+    </div>
+    <div class="floating-notes">
+      <span class="note n1">♪</span><span class="note n2">♫</span><span class="note n3">♩</span><span class="note n4">♬</span><span class="note n5">♪</span>
+    </div>
+  </section>
+
+  <section class="prem-plans" id="plans">
+    <h2 class="section-label">Choose Your Plan</h2>
+    <p class="plans-sub">Start free, upgrade anytime. Cancel whenever.</p>
+    <div class="plans-grid">
+      <div class="plan-card plan-hoverable">
+        <div class="plan-header">
+          <span class="plan-name">Free</span>
+          <div class="plan-price"><span class="price-amount">₹0</span><span class="price-period">/ forever</span></div>
+        </div>
+        <ul class="plan-features">
+          <li class="has"><i class="bi bi-check-lg"></i> Stream music online</li>
+          <li class="has"><i class="bi bi-check-lg"></i> Basic audio quality</li>
+          <li class="has"><i class="bi bi-check-lg"></i> Create playlists</li>
+          <li class="no"><i class="bi bi-x-lg"></i> Ads between songs</li>
+          <li class="no"><i class="bi bi-x-lg"></i> No offline downloads</li>
+          <li class="no"><i class="bi bi-x-lg"></i> Limited skips only</li>
+        </ul>
+        <a href="{{ url_for('index') }}" class="plan-btn plan-btn-ghost">Current Plan</a>
+      </div>
+      <div class="plan-card plan-popular plan-hoverable">
+        <div class="popular-badge"><i class="bi bi-lightning-charge-fill"></i> Most Popular</div>
+        <div class="plan-header">
+          <span class="plan-name">Individual</span>
+          <div class="plan-price"><span class="price-amount">₹119</span><span class="price-period">/ month</span></div>
+          <span class="plan-trial">30 days free trial</span>
+        </div>
+        <ul class="plan-features">
+          <li class="has"><i class="bi bi-check-lg"></i> Everything in Free</li>
+          <li class="has"><i class="bi bi-check-lg"></i> Ad-free listening</li>
+          <li class="has"><i class="bi bi-check-lg"></i> Offline downloads</li>
+          <li class="has"><i class="bi bi-check-lg"></i> HD Audio quality</li>
+          <li class="has"><i class="bi bi-check-lg"></i> Unlimited skips</li>
+          <li class="has"><i class="bi bi-check-lg"></i> Play any song</li>
+        </ul>
+        <button class="plan-btn plan-btn-premium" onclick="showPayment('Individual','119','30-day free trial')">
+          <i class="bi bi-lightning-charge-fill"></i> Start Free Trial
+        </button>
+      </div>
+      <div class="plan-card plan-hoverable">
+        <div class="plan-header">
+          <span class="plan-name">Family</span>
+          <div class="plan-price"><span class="price-amount">₹179</span><span class="price-period">/ month</span></div>
+          <span class="plan-trial">Up to 6 accounts</span>
+        </div>
+        <ul class="plan-features">
+          <li class="has"><i class="bi bi-check-lg"></i> Everything in Individual</li>
+          <li class="has"><i class="bi bi-check-lg"></i> 6 Premium accounts</li>
+          <li class="has"><i class="bi bi-check-lg"></i> Ultra HD Audio</li>
+          <li class="has"><i class="bi bi-check-lg"></i> Group Sessions</li>
+          <li class="has"><i class="bi bi-check-lg"></i> Early Access releases</li>
+          <li class="has"><i class="bi bi-check-lg"></i> Priority support</li>
+        </ul>
+        <button class="plan-btn plan-btn-premium" onclick="showPayment('Family','179','Up to 6 accounts')">
+          <i class="bi bi-people-fill"></i> Get Family Plan
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="prem-faq">
+    <h2 class="section-label">FAQs</h2>
+    <div class="faq-list">
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I cancel anytime? <i class="bi bi-chevron-down"></i></button><div class="faq-a">Yes! Cancel anytime. You'll keep Premium until billing period ends.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">What payment methods? <i class="bi bi-chevron-down"></i></button><div class="faq-a">Credit/debit cards, UPI, Net Banking, and wallets like Paytm and PhonePe.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How does free trial work? <i class="bi bi-chevron-down"></i></button><div class="faq-a">Trial starts immediately. Cancel before 30 days and pay nothing.</div></div>
+    </div>
+  </section>
+
+  <footer class="prem-footer">
+    <div class="prem-logo"><div class="logo-icon"><i class="bi bi-soundwave"></i></div><span>Sunexa Music</span></div>
+    <p>© 2026 Sunexa Music. All rights reserved.</p>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAYMENT GATEWAY MODAL
+══════════════════════════════════════ -->
+<div class="pg-overlay" id="pgOverlay" onclick="closePG(event)">
+  <div class="pg-modal" id="pgModal">
+
+    <!-- STEP 1: Payment Form -->
+    <div id="step1">
+      <div class="pg-header">
+        <button class="pg-close" onclick="closeGateway()"><i class="bi bi-x-lg"></i></button>
+        <div class="pg-brand"><i class="bi bi-shield-check-fill" style="color:#22c55e"></i> Secure Checkout — Sunexa Pay</div>
+      </div>
+      <div class="pg-plan-bar" id="planBar">
+        <div class="pg-plan-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+        <div><div class="pg-plan-nm" id="pgPlanName">Individual Plan</div><div class="pg-plan-sb" id="pgPlanSub">30-day free trial</div></div>
+        <div class="pg-plan-pr" id="pgPlanPrice">₹119<span>/mo</span></div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="pg-tabs">
+        <button class="pg-tab active" onclick="switchTab(this,'card')"><i class="bi bi-credit-card-2-front"></i> Card</button>
+        <button class="pg-tab" onclick="switchTab(this,'upi')"><i class="bi bi-phone"></i> UPI</button>
+        <button class="pg-tab" onclick="switchTab(this,'netbank')"><i class="bi bi-bank"></i> Net Banking</button>
+        <button class="pg-tab" onclick="switchTab(this,'wallet')"><i class="bi bi-wallet2"></i> Wallet</button>
+      </div>
+
+      <!-- CARD PANEL -->
+      <div class="pg-panel" id="panel-card">
+        <!-- Live Card Visual -->
+        <div class="card-vis" id="cardVis">
+          <div class="cv-top"><div class="cv-chip"><i class="bi bi-cpu"></i></div><div class="cv-network" id="cvNetwork">VISA</div></div>
+          <div class="cv-number" id="cvNum">•••• •••• •••• ••••</div>
+          <div class="cv-bot">
+            <div><div class="cvl">Card Holder</div><div class="cvv" id="cvHolder">YOUR NAME</div></div>
+            <div><div class="cvl">Expires</div><div class="cvv" id="cvExp">MM/YY</div></div>
+          </div>
+        </div>
+
+        <div class="pg-fields">
+          <div class="pg-fg">
+            <label>Card Number <span class="req">*</span></label>
+            <div class="pg-iw" id="iw-cardnum">
+              <i class="bi bi-credit-card"></i>
+              <input type="text" id="cardNum" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtCard(this)" autocomplete="cc-number"/>
+              <span id="cardBrand" class="card-brand-lbl"></span>
+            </div>
+            <div class="pg-err" id="err-cardnum"></div>
+          </div>
+          <div class="pg-fg">
+            <label>Name on Card <span class="req">*</span></label>
+            <div class="pg-iw" id="iw-cardname">
+              <i class="bi bi-person"></i>
+              <input type="text" id="cardName" placeholder="Rahul Sharma" oninput="updHolder()" autocomplete="cc-name" style="text-transform:uppercase"/>
+            </div>
+            <div class="pg-err" id="err-cardname"></div>
+          </div>
+          <div class="pg-row2">
+            <div class="pg-fg">
+              <label>Expiry <span class="req">*</span></label>
+              <div class="pg-iw" id="iw-cardexp">
+                <i class="bi bi-calendar3"></i>
+                <input type="text" id="cardExp" placeholder="MM / YY" maxlength="7" oninput="fmtExp(this)" autocomplete="cc-exp"/>
+              </div>
+              <div class="pg-err" id="err-cardexp"></div>
+            </div>
+            <div class="pg-fg">
+              <label>CVV <span class="req">*</span></label>
+              <div class="pg-iw" id="iw-cardcvv">
+                <i class="bi bi-lock"></i>
+                <input type="password" id="cardCvv" placeholder="•••" maxlength="4" autocomplete="cc-csc"/>
+                <i class="bi bi-question-circle" style="color:rgba(255,255,255,.2);cursor:help" title="3 digits on back"></i>
+              </div>
+              <div class="pg-err" id="err-cardcvv"></div>
+            </div>
+          </div>
+          <div class="pg-fg">
+            <label>Billing Mobile (for OTP) <span class="req">*</span></label>
+            <div class="pg-iw" id="iw-phone">
+              <i class="bi bi-phone"></i>
+              <input type="tel" id="cardPhone" placeholder="98XXXXXXXX" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')"/>
+            </div>
+            <div class="pg-err" id="err-phone"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- UPI PANEL -->
+      <div class="pg-panel" id="panel-upi" style="display:none">
+        <div class="upi-apps">
+          <button class="upi-app" onclick="pickUpi(this,'GPay')"><div class="upi-ic" style="background:#4285f4">G</div>Google Pay</button>
+          <button class="upi-app" onclick="pickUpi(this,'PhonePe')"><div class="upi-ic" style="background:#5f259f">P</div>PhonePe</button>
+          <button class="upi-app" onclick="pickUpi(this,'Paytm')"><div class="upi-ic" style="background:#00b9f1">₹</div>Paytm</button>
+          <button class="upi-app" onclick="pickUpi(this,'BHIM')"><div class="upi-ic" style="background:#00838f">B</div>BHIM UPI</button>
+        </div>
+        <div class="pg-divider"></div>
+        <div class="pg-fg">
+          <label>Or enter UPI ID <span class="req">*</span></label>
+          <div class="pg-iw" id="iw-upi">
+            <i class="bi bi-at"></i>
+            <input type="text" id="upiId" placeholder="yourname@upi"/>
+            <button class="verify-upi-btn" onclick="verifyUpi()">Verify</button>
+          </div>
+          <div class="pg-err" id="err-upi"></div>
+        </div>
+        <div class="upi-info-note"><i class="bi bi-info-circle"></i> A payment request will be sent to your UPI app</div>
+      </div>
+
+      <!-- NET BANKING PANEL -->
+      <div class="pg-panel" id="panel-netbank" style="display:none">
+        <div class="bank-grid">
+          <button class="bank-btn" onclick="pickBank(this)"><span class="ba" style="color:#0033a0">SBI</span><span>State Bank</span></button>
+          <button class="bank-btn" onclick="pickBank(this)"><span class="ba" style="color:#004c97">HDFC</span><span>HDFC Bank</span></button>
+          <button class="bank-btn" onclick="pickBank(this)"><span class="ba" style="color:#f37021">ICICI</span><span>ICICI Bank</span></button>
+          <button class="bank-btn" onclick="pickBank(this)"><span class="ba" style="color:#e31837">Axis</span><span>Axis Bank</span></button>
+          <button class="bank-btn" onclick="pickBank(this)"><span class="ba" style="color:#008000">PNB</span><span>Punjab Natl.</span></button>
+          <button class="bank-btn" onclick="pickBank(this)"><span class="ba" style="color:#003087">Kotak</span><span>Kotak Bank</span></button>
+        </div>
+        <div class="pg-err" id="err-bank" style="padding:.5rem 1.5rem"></div>
+      </div>
+
+      <!-- WALLET PANEL -->
+      <div class="pg-panel" id="panel-wallet" style="display:none">
+        <div class="wallet-list">
+          <button class="wallet-btn" onclick="pickWallet(this)"><div class="wi" style="background:#00b9f1">₹</div><span>Paytm Wallet</span><span class="wbal">Bal: ₹245</span></button>
+          <button class="wallet-btn" onclick="pickWallet(this)"><div class="wi" style="background:#5f259f">P</div><span>PhonePe Wallet</span><span class="wbal">Bal: ₹0</span></button>
+          <button class="wallet-btn" onclick="pickWallet(this)"><div class="wi" style="background:#ff6600">A</div><span>Amazon Pay</span><span class="wbal">Bal: ₹120</span></button>
+          <button class="wallet-btn" onclick="pickWallet(this)"><div class="wi" style="background:#009f6b">M</div><span>Mobikwik</span><span class="wbal">Bal: ₹0</span></button>
+        </div>
+        <div class="pg-err" id="err-wallet" style="padding:.5rem 1.5rem"></div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="pg-order">
+        <div class="po-row"><span>Plan</span><span id="osPlan">Individual – Monthly</span></div>
+        <div class="po-row"><span>Trial Period</span><span class="col-green">30 Days Free</span></div>
+        <div class="po-row po-total"><span>Due Today</span><span id="osTotal">₹0.00</span></div>
+      </div>
+
+      <!-- Errors & Pay -->
+      <div class="pg-err" id="err-global" style="padding:0 1.5rem .3rem;font-size:.82rem"></div>
+      <button class="pg-pay-btn" onclick="doPayment()">
+        <i class="bi bi-lock-fill"></i> <span id="pgPayLbl">Start Free Trial — ₹0 Today</span>
+      </button>
+      <div class="pg-safe"><i class="bi bi-shield-check" style="color:#22c55e"></i> 256-bit SSL encrypted · Powered by Sunexa Pay</div>
+    </div>
+
+    <!-- STEP 2: Processing -->
+    <div id="step2" style="display:none">
+      <div class="pg-proc">
+        <div class="proc-ring">
+          <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" stroke="rgba(255,255,255,.08)" stroke-width="4" fill="none"/><circle cx="32" cy="32" r="28" stroke="url(#g1)" stroke-width="4" fill="none" stroke-dasharray="176" stroke-dashoffset="44" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 32 32" to="360 32 32" dur="1.4s" repeatCount="indefinite"/></circle><defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs></svg>
+          <i class="bi bi-shield-lock proc-ic"></i>
+        </div>
+        <h3>Processing Payment</h3>
+        <p>Please wait, do not close this window...</p>
+        <div class="proc-steps">
+          <div class="ps active" id="ps1"><i class="bi bi-arrow-right-circle-fill"></i> Verifying payment details</div>
+          <div class="ps" id="ps2"><i class="bi bi-circle"></i> Connecting to your bank</div>
+          <div class="ps" id="ps3"><i class="bi bi-circle"></i> Activating Premium membership</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: Success -->
+    <div id="step3" style="display:none">
+      <div class="pg-success">
+        <div class="succ-anim">
+          <svg viewBox="0 0 90 90"><circle cx="45" cy="45" r="40" fill="none" stroke="rgba(34,197,94,.2)" stroke-width="3"/><circle cx="45" cy="45" r="40" fill="none" stroke="#22c55e" stroke-width="3" stroke-dasharray="251" stroke-dashoffset="251" class="succ-ring"/><polyline points="28,47 40,59 63,34" fill="none" stroke="#22c55e" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60" class="succ-tick"/></svg>
+        </div>
+        <h2>You're Premium! 🎉</h2>
+        <p class="succ-sub">Welcome to <strong id="succPlan">Individual</strong> — your membership is now active.</p>
+        <div class="succ-perks">
+          <div class="sp"><i class="bi bi-check-circle-fill"></i> Ad-free music</div>
+          <div class="sp"><i class="bi bi-check-circle-fill"></i> Offline downloads</div>
+          <div class="sp"><i class="bi bi-check-circle-fill"></i> HD Audio</div>
+        </div>
+        <div class="succ-receipt">
+          <div class="sr"><span>Plan</span><strong id="rcPlan">Individual Plan</strong></div>
+          <div class="sr"><span>Amount</span><strong id="rcAmt">₹119/month</strong></div>
+          <div class="sr"><span>Payment</span><strong id="rcMethod">Card</strong></div>
+          <div class="sr"><span>Next Billing</span><strong id="rcDate">—</strong></div>
+        </div>
+        <button class="pg-pay-btn" onclick="goToDashboard()">
+          <i class="bi bi-crown-fill"></i> Go to Premium Dashboard
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+/* ── PAGE ── */
+.premium-page{min-height:100vh;background:#06060f;color:#f1f0fa;font-family:'Outfit',sans-serif;position:relative;overflow-x:hidden;}
+.prem-bg{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.prem-orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.5;}
+.o1{width:600px;height:600px;top:-150px;left:-150px;background:radial-gradient(circle,rgba(124,58,237,.35),transparent);animation:orbF 10s ease-in-out infinite alternate;}
+.o2{width:400px;height:400px;top:40%;right:-100px;background:radial-gradient(circle,rgba(6,182,212,.25),transparent);animation:orbF 10s ease-in-out infinite alternate;animation-delay:-4s;}
+.o3{width:500px;height:500px;bottom:-100px;left:30%;background:radial-gradient(circle,rgba(236,72,153,.2),transparent);animation:orbF 10s ease-in-out infinite alternate;animation-delay:-7s;}
+@keyframes orbF{from{transform:translate(0,0) scale(1)}to{transform:translate(40px,-30px) scale(1.1)}}
+.prem-nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:1.3rem 3rem;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(6,6,15,.6);backdrop-filter:blur(16px);}
+.prem-logo{display:flex;align-items:center;gap:.7rem;font-size:1.2rem;font-weight:700;color:#f1f0fa;text-decoration:none;}
+.prem-logo .logo-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#fff;}
+.prem-back{display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s;font-size:.9rem;}
+.prem-back:hover{color:#f1f0fa;}
+.prem-hero{position:relative;z-index:1;text-align:center;padding:6rem 2rem 4rem;}
+.prem-badge{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(6,182,212,.2));border:1px solid rgba(124,58,237,.4);border-radius:40px;padding:.4rem 1.2rem;font-size:.8rem;font-weight:700;letter-spacing:.1em;color:#a78bfa;margin-bottom:2rem;}
+.prem-headline{font-size:clamp(3rem,8vw,6rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:1.2rem;}
+.gradient-text{background:linear-gradient(135deg,#7c3aed,#06b6d4,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200%;animation:gs 4s ease infinite alternate;}
+@keyframes gs{from{background-position:0%}to{background-position:100%}}
+.prem-sub{font-size:1.1rem;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:2.5rem;}
+.prem-hero-btns{display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.btn-get-premium{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;text-decoration:none;font-weight:700;padding:.9rem 2.2rem;border-radius:50px;font-size:1rem;box-shadow:0 8px 32px rgba(124,58,237,.5);transition:filter .2s,transform .2s;}
+.btn-get-premium:hover{filter:brightness(1.15);transform:translateY(-2px);color:#fff;}
+.btn-ghost{display:inline-flex;align-items:center;color:rgba(255,255,255,.5);text-decoration:none;font-weight:500;padding:.9rem 1.8rem;border-radius:50px;font-size:1rem;border:1px solid rgba(255,255,255,.15);transition:border-color .2s,color .2s;}
+.btn-ghost:hover{border-color:rgba(255,255,255,.35);color:#fff;}
+.floating-notes{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.note{position:absolute;font-size:2rem;color:rgba(124,58,237,.2);animation:nf 6s ease-in-out infinite;}
+.n1{left:8%;top:20%;animation-delay:0s;font-size:1.5rem;}.n2{left:85%;top:30%;animation-delay:-2s;font-size:2.5rem;}.n3{left:15%;top:70%;animation-delay:-1s;font-size:1.8rem;}.n4{left:75%;top:65%;animation-delay:-3s;font-size:1.3rem;}.n5{left:50%;top:15%;animation-delay:-4s;}
+@keyframes nf{0%,100%{transform:translateY(0) rotate(-5deg);opacity:.2}50%{transform:translateY(-20px) rotate(5deg);opacity:.5}}
+.section-label{text-align:center;font-size:1rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7c3aed;margin-bottom:.6rem;}
+.prem-plans{position:relative;z-index:1;padding:3rem 2rem 5rem;}
+.plans-sub{text-align:center;color:rgba(255,255,255,.4);margin-bottom:3rem;}
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1.5rem;max-width:980px;margin:0 auto;align-items:start;}
+.plan-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:2rem;position:relative;cursor:pointer;transition:transform .3s,box-shadow .3s,border-color .3s,background .3s;}
+.plan-hoverable:hover{transform:translateY(-8px);background:linear-gradient(160deg,rgba(124,58,237,.18),rgba(6,182,212,.1));border-color:rgba(124,58,237,.55);box-shadow:0 0 0 1px rgba(124,58,237,.25),0 24px 60px rgba(124,58,237,.2),0 0 80px rgba(124,58,237,.08);}
+.plan-popular{background:linear-gradient(160deg,rgba(124,58,237,.18),rgba(6,182,212,.1));border-color:rgba(124,58,237,.5);box-shadow:0 0 0 1px rgba(124,58,237,.2),0 20px 60px rgba(124,58,237,.15);}
+.plan-popular:hover{transform:translateY(-10px);box-shadow:0 0 0 2px rgba(124,58,237,.5),0 28px 70px rgba(124,58,237,.3);}
+.popular-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#fff;font-size:.75rem;font-weight:700;letter-spacing:.08em;padding:.35rem 1.1rem;border-radius:40px;white-space:nowrap;}
+.plan-header{margin-bottom:1.5rem;}
+.plan-name{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);}
+.plan-price{margin:.5rem 0 .3rem;}
+.price-amount{font-size:2.8rem;font-weight:800;letter-spacing:-.02em;}
+.price-period{font-size:.9rem;color:rgba(255,255,255,.4);}
+.plan-trial{display:inline-block;font-size:.78rem;color:#06b6d4;font-weight:500;}
+.plan-features{list-style:none;margin:0 0 1.8rem;padding:0;display:flex;flex-direction:column;gap:.65rem;}
+.plan-features li{display:flex;align-items:center;gap:.6rem;font-size:.88rem;}
+.plan-features .has{color:rgba(255,255,255,.8);}.plan-features .has i{color:#22c55e;}
+.plan-features .no{color:rgba(255,255,255,.25);}.plan-features .no i{color:rgba(255,255,255,.2);}
+.plan-btn{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.8rem;border-radius:50px;font-family:inherit;font-size:.92rem;font-weight:700;cursor:pointer;border:none;text-decoration:none;transition:filter .2s,transform .2s;}
+.plan-btn:hover{filter:brightness(1.12);transform:translateY(-1px);}
+.plan-btn-premium{background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;box-shadow:0 6px 20px rgba(124,58,237,.4);}
+.plan-btn-ghost{background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1);}
+.prem-faq{position:relative;z-index:1;padding:2rem 2rem 3rem;max-width:680px;margin:0 auto;}
+.faq-list{display:flex;flex-direction:column;gap:.5rem;margin-top:1.5rem;}
+.faq-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;overflow:hidden;}
+.faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;color:#f1f0fa;padding:1rem 1.3rem;font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer;text-align:left;transition:background .2s;}
+.faq-q:hover{background:rgba(255,255,255,.04);}
+.faq-q i{transition:transform .3s;}
+.faq-q.open i{transform:rotate(180deg);}
+.faq-a{max-height:0;overflow:hidden;padding:0 1.3rem;color:rgba(255,255,255,.5);font-size:.87rem;line-height:1.7;transition:max-height .35s,padding .35s;}
+.faq-a.open{max-height:200px;padding:.2rem 1.3rem 1rem;}
+.prem-footer{position:relative;z-index:1;text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;align-items:center;gap:.6rem;color:rgba(255,255,255,.25);font-size:.82rem;}
+.prem-footer .prem-logo{font-size:1rem;}
+
+/* ══════════════════════════
+   PAYMENT GATEWAY
+══════════════════════════ */
+.pg-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);z-index:3000;display:none;align-items:center;justify-content:center;padding:1rem;}
+.pg-overlay.show{display:flex;}
+.pg-modal{background:#0a0a1a;border:1px solid rgba(255,255,255,.1);border-radius:20px;width:min(500px,96vw);max-height:92vh;overflow-y:auto;animation:slideUp .3s cubic-bezier(.4,0,.2,1);}
+@keyframes slideUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:none}}
+.pg-header{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.07);}
+.pg-brand{font-weight:700;font-size:.9rem;color:#a78bfa;display:flex;align-items:center;gap:.5rem;}
+.pg-close{background:rgba(255,255,255,.07);border:none;color:rgba(255,255,255,.5);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.pg-close:hover{background:rgba(255,255,255,.14);}
+.pg-plan-bar{display:flex;align-items:center;gap:.9rem;padding:1rem 1.5rem;background:rgba(124,58,237,.1);border-bottom:1px solid rgba(255,255,255,.06);}
+.pg-plan-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#fff;flex-shrink:0;}
+.pg-plan-nm{font-weight:700;font-size:.9rem;}
+.pg-plan-sb{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:.1rem;}
+.pg-plan-pr{margin-left:auto;font-size:1.35rem;font-weight:800;color:#a78bfa;}
+.pg-plan-pr span{font-size:.7rem;font-weight:400;color:rgba(255,255,255,.35);}
+/* Tabs */
+.pg-tabs{display:flex;gap:.3rem;padding:.9rem 1.5rem .4rem;overflow-x:auto;}
+.pg-tab{display:flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.45);padding:.45rem .9rem;border-radius:8px;cursor:pointer;font-family:inherit;font-size:.8rem;font-weight:600;white-space:nowrap;transition:all .2s;}
+.pg-tab:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);}
+.pg-tab.active{background:rgba(124,58,237,.25);border-color:rgba(124,58,237,.5);color:#a78bfa;}
+/* Panels */
+.pg-panel{padding:.8rem 1.5rem;}
+/* Card Visual */
+.card-vis{background:linear-gradient(135deg,#1a1a3e 0%,#2d1b69 50%,#1a3a5c 100%);border-radius:14px;padding:1.3rem;margin-bottom:1rem;height:128px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.4);}
+.card-vis::before{content:'';position:absolute;top:-30px;right:-30px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.04);}
+.cv-top{display:flex;justify-content:space-between;align-items:center;}
+.cv-chip{color:rgba(255,215,100,.7);font-size:1.3rem;}
+.cv-network{font-size:.85rem;font-weight:800;letter-spacing:.06em;color:rgba(255,255,255,.6);}
+.cv-number{font-family:'DM Mono',monospace;font-size:.95rem;letter-spacing:.15em;color:rgba(255,255,255,.9);}
+.cv-bot{display:flex;gap:1.5rem;align-items:flex-end;}
+.cvl{font-size:.55rem;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.3);margin-bottom:.12rem;}
+.cvv{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.85);letter-spacing:.04em;}
+/* Fields */
+.pg-fields{display:flex;flex-direction:column;gap:.75rem;}
+.pg-row2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+.pg-fg label{display:block;font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.35rem;}
+.req{color:#ef4444;}
+.pg-iw{display:flex;align-items:center;gap:.45rem;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.09);border-radius:9px;padding:.58rem .9rem;transition:border-color .2s,box-shadow .2s;}
+.pg-iw:focus-within{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.18);}
+.pg-iw.error{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.15);}
+.pg-iw.valid{border-color:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.1);}
+.pg-iw i{color:rgba(255,255,255,.25);font-size:.88rem;flex-shrink:0;}
+.pg-iw input{background:none;border:none;outline:none;color:#f1f0fa;font-family:inherit;font-size:.88rem;width:100%;}
+.pg-iw input::placeholder{color:rgba(255,255,255,.18);}
+.card-brand-lbl{font-size:.75rem;font-weight:800;color:#06b6d4;min-width:36px;text-align:right;letter-spacing:.04em;}
+.pg-err{font-size:.75rem;color:#f87171;margin-top:.25rem;min-height:1rem;}
+/* UPI */
+.upi-apps{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;}
+.upi-app{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.75rem .4rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.35rem;font-size:.73rem;color:rgba(255,255,255,.55);font-family:inherit;transition:all .2s;}
+.upi-app:hover,.upi-app.sel{background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.4);color:#f1f0fa;}
+.upi-ic{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:.88rem;}
+.pg-divider{height:1px;background:rgba(255,255,255,.06);margin:.8rem 0;}
+.verify-upi-btn{background:rgba(124,58,237,.3);border:none;color:#a78bfa;padding:.28rem .75rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.78rem;font-weight:700;flex-shrink:0;transition:background .2s;}
+.verify-upi-btn:hover{background:rgba(124,58,237,.5);}
+.upi-info-note{font-size:.75rem;color:rgba(255,255,255,.25);display:flex;align-items:center;gap:.4rem;margin-top:.5rem;}
+/* Banks */
+.bank-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;}
+.bank-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.75rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.3rem;font-family:inherit;color:rgba(255,255,255,.55);font-size:.73rem;transition:all .2s;}
+.bank-btn:hover,.bank-btn.sel{background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.4);color:#f1f0fa;}
+.ba{font-size:.95rem;font-weight:800;}
+/* Wallets */
+.wallet-list{display:flex;flex-direction:column;gap:.45rem;}
+.wallet-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.75rem 1rem;cursor:pointer;display:flex;align-items:center;gap:.75rem;font-family:inherit;color:rgba(255,255,255,.65);font-size:.86rem;transition:all .2s;text-align:left;}
+.wallet-btn:hover,.wallet-btn.sel{background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.4);color:#f1f0fa;}
+.wi{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:.9rem;flex-shrink:0;}
+.wbal{margin-left:auto;font-size:.73rem;color:rgba(255,255,255,.3);}
+/* Order box */
+.pg-order{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:.9rem 1.2rem;margin:1rem 1.5rem;display:flex;flex-direction:column;gap:.45rem;}
+.po-row{display:flex;justify-content:space-between;font-size:.84rem;color:rgba(255,255,255,.45);}
+.po-row span:last-child{color:rgba(255,255,255,.75);font-weight:500;}
+.po-total{padding-top:.45rem;border-top:1px solid rgba(255,255,255,.07);font-weight:700;font-size:.92rem;}
+.po-total span{color:#f1f0fa !important;}
+.col-green{color:#22c55e !important;}
+/* Pay btn */
+.pg-pay-btn{display:flex;align-items:center;justify-content:center;gap:.55rem;width:calc(100% - 3rem);margin:.5rem 1.5rem .3rem;padding:.88rem;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;border-radius:11px;font-family:inherit;font-size:.96rem;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(124,58,237,.4);transition:filter .2s,transform .2s;}
+.pg-pay-btn:hover{filter:brightness(1.12);transform:translateY(-1px);}
+.pg-safe{text-align:center;font-size:.72rem;color:rgba(255,255,255,.22);padding:.5rem 1.5rem 1.2rem;display:flex;align-items:center;justify-content:center;gap:.4rem;}
+/* Processing */
+.pg-proc{display:flex;flex-direction:column;align-items:center;padding:3rem 2rem;text-align:center;gap:.9rem;}
+.proc-ring{position:relative;width:68px;height:68px;}
+.proc-ring svg{width:100%;height:100%;}
+.proc-ic{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.3rem;color:#7c3aed;}
+.pg-proc h3{font-size:1.05rem;font-weight:700;}
+.pg-proc p{font-size:.82rem;color:rgba(255,255,255,.35);}
+.proc-steps{display:flex;flex-direction:column;gap:.45rem;width:100%;max-width:260px;margin-top:.4rem;}
+.ps{display:flex;align-items:center;gap:.55rem;font-size:.8rem;color:rgba(255,255,255,.25);transition:color .4s;}
+.ps.active{color:#a78bfa;}.ps.done{color:#22c55e;}
+.ps i{font-size:.75rem;}
+/* Success */
+.pg-success{display:flex;flex-direction:column;align-items:center;padding:2.5rem 1.8rem;text-align:center;gap:.9rem;}
+.succ-anim{width:86px;height:86px;}
+.succ-anim svg{width:100%;height:100%;}
+.succ-ring{animation:drawC .6s ease forwards;}
+.succ-tick{animation:drawT .4s .55s ease forwards;}
+@keyframes drawC{to{stroke-dashoffset:0}}
+@keyframes drawT{to{stroke-dashoffset:0}}
+.pg-success h2{font-size:1.4rem;font-weight:800;}
+.succ-sub{color:rgba(255,255,255,.5);font-size:.88rem;}
+.succ-perks{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center;}
+.sp{display:flex;align-items:center;gap:.35rem;font-size:.8rem;color:#22c55e;font-weight:600;}
+.succ-receipt{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:1rem 1.3rem;width:100%;display:flex;flex-direction:column;gap:.45rem;}
+.sr{display:flex;justify-content:space-between;font-size:.83rem;}
+.sr span:first-child{color:rgba(255,255,255,.35);}
+.sr strong{color:#f1f0fa;}
+</style>
+
+<script>
+/* ── FAQ ── */
+function toggleFaq(btn){
+  const ans=btn.nextElementSibling;
+  const open=ans.classList.contains('open');
+  document.querySelectorAll('.faq-a').forEach(a=>a.classList.remove('open'));
+  document.querySelectorAll('.faq-q').forEach(q=>q.classList.remove('open'));
+  if(!open){ans.classList.add('open');btn.classList.add('open');}
+}
+
+/* ── GATEWAY STATE ── */
+let gPlan='',gAmount=0,gMethod='card',gUpiApp='',gBank='',gWallet='';
+
+function showPayment(plan,amount,sub){
+  gPlan=plan; gAmount=parseInt(amount); gMethod='card';
+  document.getElementById('pgPlanName').textContent=plan+' Plan';
+  document.getElementById('pgPlanSub').textContent=sub;
+  document.getElementById('pgPlanPrice').innerHTML='₹'+amount+'<span>/mo</span>';
+  document.getElementById('osPlan').textContent=plan+' – Monthly';
+  const due=plan==='Individual'?'₹0.00':'₹'+amount+'.00';
+  document.getElementById('osTotal').textContent=due;
+  document.getElementById('pgPayLbl').textContent=plan==='Individual'?'Start Free Trial — ₹0 Today':'Get '+plan+' — ₹'+amount;
+  // Reset
+  showGStep(1);
+  document.querySelectorAll('.pg-tab').forEach((t,i)=>{t.classList.toggle('active',i===0);});
+  showPanel('card');
+  clearAllErrors();
+  document.getElementById('pgOverlay').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closeGateway(){
+  document.getElementById('pgOverlay').classList.remove('show');
+  document.body.style.overflow='';
+}
+function closePG(e){if(e.target.id==='pgOverlay')closeGateway();}
+
+function showGStep(n){
+  [1,2,3].forEach(i=>{
+    const el=document.getElementById('step'+i);
+    if(el)el.style.display=n===i?'block':'none';
+  });
+}
+
+function switchTab(btn,panel){
+  document.querySelectorAll('.pg-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active'); gMethod=panel;
+  showPanel(panel); clearAllErrors();
+}
+function showPanel(name){
+  ['card','upi','netbank','wallet'].forEach(p=>{
+    const el=document.getElementById('panel-'+p);
+    if(el)el.style.display=p===name?'block':'none';
+  });
+}
+
+/* ── Card formatters ── */
+function fmtCard(inp){
+  let v=inp.value.replace(/\D/g,'').slice(0,16);
+  inp.value=v.replace(/(.{4})/g,'$1 ').trim();
+  const disp=v.padEnd(16,'•').replace(/(.{4})/g,'$1 ').trim();
+  document.getElementById('cvNum').textContent=disp;
+  const b=document.getElementById('cardBrand');
+  if(v.startsWith('4'))b.textContent='VISA';
+  else if(/^5[1-5]/.test(v))b.textContent='MC';
+  else if(v.startsWith('6'))b.textContent='RuPay';
+  else if(v.startsWith('34')||v.startsWith('37'))b.textContent='AMEX';
+  else b.textContent='';
+  document.getElementById('cvNetwork').textContent=b.textContent||'CARD';
+}
+function fmtExp(inp){
+  let v=inp.value.replace(/\D/g,'');
+  if(v.length>2)v=v.slice(0,2)+' / '+v.slice(2,4);
+  inp.value=v;
+  document.getElementById('cvExp').textContent=v||'MM/YY';
+}
+function updHolder(){
+  const n=(document.getElementById('cardName').value||'').toUpperCase().slice(0,20);
+  document.getElementById('cvHolder').textContent=n||'YOUR NAME';
+}
+
+/* ── Selectors ── */
+function pickUpi(btn,app){gUpiApp=app;document.querySelectorAll('.upi-app').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');}
+function pickBank(btn){gBank=btn.querySelector('.ba').textContent;document.querySelectorAll('.bank-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');}
+function pickWallet(btn){gWallet=btn.querySelector('span').textContent;document.querySelectorAll('.wallet-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');}
+
+function verifyUpi(){
+  const id=document.getElementById('upiId').value.trim();
+  const err=document.getElementById('err-upi');
+  if(!id){err.textContent='Please enter UPI ID';setErr('iw-upi');return;}
+  if(!id.includes('@')){err.textContent='Invalid UPI ID format (must contain @)';setErr('iw-upi');return;}
+  err.textContent=''; setValid('iw-upi');
+  const btn=document.querySelector('.verify-upi-btn');
+  btn.textContent='✓ Verified'; btn.style.color='#22c55e';
+  setTimeout(()=>{btn.textContent='Verify';btn.style.color='';},2500);
+}
+
+/* ── Validation ── */
+function setErr(id){document.getElementById(id)?.classList.add('error');document.getElementById(id)?.classList.remove('valid');}
+function setValid(id){document.getElementById(id)?.classList.remove('error');document.getElementById(id)?.classList.add('valid');}
+function clearAllErrors(){
+  document.querySelectorAll('.pg-err').forEach(e=>e.textContent='');
+  document.querySelectorAll('.pg-iw').forEach(i=>{i.classList.remove('error','valid');});
+}
+
+function validateCard(){
+  let ok=true;
+  const num=document.getElementById('cardNum').value.replace(/\s/g,'');
+  const name=document.getElementById('cardName').value.trim();
+  const exp=document.getElementById('cardExp').value.replace(/\s/g,'');
+  const cvv=document.getElementById('cardCvv').value;
+  const phone=document.getElementById('cardPhone').value;
+
+  if(num.length<16){setErr('iw-cardnum');document.getElementById('err-cardnum').textContent='Enter valid 16-digit card number';ok=false;}
+  else setValid('iw-cardnum');
+
+  if(name.length<3){setErr('iw-cardname');document.getElementById('err-cardname').textContent='Enter name as on card';ok=false;}
+  else setValid('iw-cardname');
+
+  if(!/^\d{2}\/\d{2}$/.test(exp)){setErr('iw-cardexp');document.getElementById('err-cardexp').textContent='Enter valid expiry MM/YY';ok=false;}
+  else setValid('iw-cardexp');
+
+  if(cvv.length<3){setErr('iw-cardcvv');document.getElementById('err-cardcvv').textContent='Enter 3-4 digit CVV';ok=false;}
+  else setValid('iw-cardcvv');
+
+  if(phone.length!==10){setErr('iw-phone');document.getElementById('err-phone').textContent='Enter valid 10-digit mobile number';ok=false;}
+  else setValid('iw-phone');
+
+  return ok;
+}
+
+function validateUpi(){
+  const id=document.getElementById('upiId').value.trim();
+  if(!gUpiApp && !id){document.getElementById('err-upi').textContent='Select a UPI app or enter UPI ID';setErr('iw-upi');return false;}
+  if(id && !id.includes('@')){document.getElementById('err-upi').textContent='Invalid UPI ID format';setErr('iw-upi');return false;}
+  return true;
+}
+
+function validateBank(){
+  if(!gBank){document.getElementById('err-bank').textContent='Please select a bank';return false;}
+  return true;
+}
+
+function validateWallet(){
+  if(!gWallet){document.getElementById('err-wallet').textContent='Please select a wallet';return false;}
+  return true;
+}
+
+/* ── Process ── */
+function doPayment(){
+  clearAllErrors();
+  let ok=false;
+  if(gMethod==='card')   ok=validateCard();
+  else if(gMethod==='upi')    ok=validateUpi();
+  else if(gMethod==='netbank') ok=validateBank();
+  else if(gMethod==='wallet')  ok=validateWallet();
+
+  if(!ok){document.getElementById('err-global').textContent='';return;}
+
+  showGStep(2);
+  // Animate steps
+  const steps=[{id:'ps1',delay:900},{id:'ps2',delay:1900},{id:'ps3',delay:2800}];
+  steps.forEach(({id,delay})=>{
+    setTimeout(()=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      // mark prev done
+      const prev=el.previousElementSibling;
+      if(prev&&prev.classList.contains('ps')){prev.classList.remove('active');prev.classList.add('done');prev.querySelector('i').className='bi bi-check-circle-fill';}
+      el.classList.add('active');el.querySelector('i').className='bi bi-arrow-right-circle-fill';
+    },delay);
+  });
+  setTimeout(()=>{
+    const last=document.getElementById('ps3');
+    if(last){last.classList.remove('active');last.classList.add('done');last.querySelector('i').className='bi bi-check-circle-fill';}
+  },3700);
+  setTimeout(activatePremium,4200);
+}
+
+function activatePremium(){
+  fetch('/api/activate-premium',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({plan:gPlan,method:gMethod})
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    if(data.error){alert('Error: '+data.error);showGStep(1);return;}
+    // Show success
+    showGStep(3);
+    document.getElementById('succPlan').textContent=gPlan;
+    document.getElementById('rcPlan').textContent=gPlan+' Plan';
+    document.getElementById('rcAmt').textContent='₹'+gAmount+'/month';
+    document.getElementById('rcMethod').textContent=gMethod.charAt(0).toUpperCase()+gMethod.slice(1);
+    document.getElementById('rcDate').textContent=data.expires;
+    // Animate SVG
+    const ring=document.querySelector('.succ-ring');
+    const tick=document.querySelector('.succ-tick');
+    if(ring){ring.style.animation='none';void ring.offsetWidth;ring.style.animation='drawC .6s ease forwards';}
+    if(tick){tick.style.animation='none';void tick.offsetWidth;tick.style.animation='drawT .4s .55s ease forwards';}
+  })
+  .catch(()=>{alert('Network error. Please try again.');showGStep(1);});
+}
+
+function goToDashboard(){window.location='/premium/dashboard';}
+</script>
+{% endblock %}
