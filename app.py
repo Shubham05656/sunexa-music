@@ -176,7 +176,7 @@ def login():
                 return redirect(url_for('index'))
             flash('Invalid email or password.','danger')
         except Exception as e:
-            flash('Database error.','danger')
+    flash(f'Error: {str(e)}','danger')
     return render_template('login.html')
 
 @app.route('/logout')
