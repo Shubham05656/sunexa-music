@@ -23,10 +23,11 @@ app.secret_key = os.environ.get('SECRET_KEY', 'sunexa_super_secret_key_2024')
 # ── MySQL Config ──────────────────────────────────────────────
 # ── MySQL Config ──────────────────────────────────────────────
 
-app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST')
-app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER')
-app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD')
-app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB')
+app.config['MYSQL_HOST'] = os.getenv("MYSQL_HOST")
+app.config['MYSQL_USER'] = os.getenv("MYSQL_USER")
+app.config['MYSQL_PASSWORD'] = os.getenv("MYSQL_PASSWORD")
+app.config['MYSQL_DB'] = os.getenv("MYSQL_DB")
+app.config['MYSQL_PORT'] = int(os.getenv("MYSQL_PORT"))
 
 # Aiven MySQL port
 app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 10050))
