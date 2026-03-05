@@ -10,15 +10,31 @@ from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
-app = Flask(__name__)
-app.secret_key = 'sunexa_super_secret_key_2024'
+# ── Load .env file (local development ke liye) ───────────────
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # Production mein dotenv nahi chahiye
 
-# ── MySQL Config ──────────────────────────────────────────────
-app.config['MYSQL_HOST']        = 'localhost'
-app.config['MYSQL_USER']        = 'root'
-app.config['MYSQL_PASSWORD']    = 'Shubh@123'        # ← apna password
-app.config['MYSQL_DB']          = 'sunexa_music'
+app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'sunexa_super_secret_key_2024')
+
+# ── MySQL Config (Auto — Local ya Render dono kaam karega) ────
+# Local pe  → .env file se load hoga
+# Render pe → Render Environment Variables se load hoga
+app.config['MYSQL_HOST']        = os.environ.get('MYSQL_HOST', 'localhost')
+app.config['MYSQL_USER']        = os.environ.get('MYSQL_USER', 'root')
+app.config['MYSQL_PASSWORD']    = os.environ.get('MYSQL_PASSWORD', '')
+app.config['MYSQL_DB']          = os.environ.get('MYSQL_DB', 'sunexa_music')
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+
+# Aiven ke liye PORT aur SSL (sirf tab jab online ho)
+mysql_port = os.environ.get('MYSQL_PORT')
+if mysql_port:
+    app.config['MYSQL_PORT'] = int(mysql_port)
+
+app.config['MYSQL_SSL_DISABLED'] = True
 
 UPLOAD_FOLDER_IMAGES = os.path.join('static', 'uploads', 'images')
 UPLOAD_FOLDER_SONGS  = os.path.join('static', 'uploads', 'songs')
@@ -72,7 +88,6 @@ def index():
     uid = session['user_id']
     cur = mysql.connection.cursor()
 
-    # Songs by genre
     genres = ['trending','romantic','sad','remix','hot','devotional','hiphop','party']
     genre_songs = {}
     for g in genres:
@@ -94,7 +109,6 @@ def index():
     cur.execute("SELECT song_id FROM liked_songs WHERE user_id=%s", (uid,))
     liked_ids = {r['song_id'] for r in cur.fetchall()}
 
-    # Premium status
     cur.execute("""
         SELECT * FROM premium_subscriptions
         WHERE user_id=%s AND status='active' AND expires_at > NOW()
@@ -138,14 +152,13 @@ def login():
         identifier=request.form.get('email','').strip()
         password=request.form.get('password','')
 
-        # Check if admin credentials
-        if identifier == 'admin' and password == 'sunexa@admin123':
+        admin_pass = os.environ.get('ADMIN_PASSWORD', 'sunexa@admin123')
+        if identifier == 'admin' and password == admin_pass:
             session['admin_logged_in'] = True
             log_admin('admin_login', f'Login from {request.remote_addr}')
             flash('Welcome, Admin!', 'success')
             return redirect(url_for('admin_dashboard'))
 
-        # Normal user login
         try:
             cur=mysql.connection.cursor()
             cur.execute("SELECT * FROM users WHERE email=%s",(identifier,))
@@ -174,7 +187,7 @@ def logout():
     flash('Logged out.','info')
     return redirect(url_for('login'))
 
-# ── Premium Page ──────────────────────────────────────────────
+# ── Premium ───────────────────────────────────────────────────
 @app.route('/premium')
 @login_required
 def premium():
@@ -204,7 +217,6 @@ def premium_dashboard():
     if not sub:
         flash('You do not have an active Premium plan.','warning')
         return redirect(url_for('premium'))
-
     cur.execute("SELECT COUNT(*) AS cnt FROM liked_songs WHERE user_id=%s",(uid,))
     liked_count=cur.fetchone()['cnt']
     cur.execute("SELECT COUNT(DISTINCT song_id) AS cnt FROM recently_played WHERE user_id=%s",(uid,))
@@ -214,12 +226,10 @@ def premium_dashboard():
     cur.execute("SELECT s.* FROM liked_songs ls JOIN songs s ON ls.song_id=s.id WHERE ls.user_id=%s ORDER BY ls.id DESC LIMIT 5",(uid,))
     fav_songs=cur.fetchall()
     cur.close()
-
     return render_template('premium_dashboard.html', sub=sub,
                            liked_count=liked_count, played_count=played_count,
                            pl_count=pl_count, fav_songs=fav_songs)
 
-# ── API: Activate Premium ──────────────────────────────────────
 @app.route('/api/activate-premium', methods=['POST'])
 @login_required
 def api_activate_premium():
@@ -229,10 +239,8 @@ def api_activate_premium():
     price  = 119 if plan=='Individual' else 179
     days   = 30
     uid    = session['user_id']
-
     try:
         cur=mysql.connection.cursor()
-        # Cancel old active subs
         cur.execute("UPDATE premium_subscriptions SET status='cancelled' WHERE user_id=%s AND status='active'",(uid,))
         expires = datetime.now() + timedelta(days=days)
         cur.execute("""
@@ -328,7 +336,8 @@ def admin(): return redirect(url_for('admin_login'))
 @app.route('/admin/login', methods=['GET','POST'])
 def admin_login():
     if request.method=='POST':
-        if request.form.get('username')=='admin' and request.form.get('password')=='sunexa@admin123':
+        admin_pass = os.environ.get('ADMIN_PASSWORD', 'sunexa@admin123')
+        if request.form.get('username')=='admin' and request.form.get('password')==admin_pass:
             session['admin_logged_in']=True
             log_admin('admin_login',f'Login from {request.remote_addr}')
             return redirect(url_for('admin_dashboard'))
@@ -339,11 +348,8 @@ def admin_login():
 @admin_required
 def admin_dashboard():
     cur=mysql.connection.cursor()
-
     cur.execute("SELECT * FROM songs ORDER BY created_at DESC")
     songs=cur.fetchall()
-
-    # Full user data with stats and premium info
     cur.execute("""
         SELECT u.id, u.name, u.email, u.created_at, u.is_premium,
                COUNT(DISTINCT ls.song_id)  AS liked_count,
@@ -362,16 +368,10 @@ def admin_dashboard():
         ORDER BY u.created_at DESC
     """)
     users=cur.fetchall()
-
-    # Revenue stats
     cur.execute("SELECT SUM(plan_price) AS total, COUNT(*) AS cnt FROM premium_subscriptions WHERE status='active'")
     revenue=cur.fetchone()
-
-    # Recent admin logs
     cur.execute("SELECT * FROM admin_logs ORDER BY created_at DESC LIMIT 20")
     admin_logs=cur.fetchall()
-
-    # Recent user activity
     cur.execute("""
         SELECT ua.*, u.name AS user_name
         FROM user_activity ua
@@ -379,7 +379,6 @@ def admin_dashboard():
         ORDER BY ua.created_at DESC LIMIT 30
     """)
     user_activity=cur.fetchall()
-
     cur.close()
     return render_template('admin_dashboard.html',
                            songs=songs, users=users,
@@ -474,7 +473,6 @@ def admin_logout():
     session.pop('admin_logged_in',None)
     return redirect(url_for('admin_login'))
 
-
 @app.route('/genre/<genre_name>')
 @login_required
 def genre_page(genre_name):
@@ -492,7 +490,6 @@ def genre_page(genre_name):
     cur.close()
     return render_template('genre.html', genre=genre_name, songs=songs,
                            liked_ids=liked_ids, playlists=playlists)
-
 
 @app.route('/api/cancel-premium', methods=['POST'])
 @login_required
