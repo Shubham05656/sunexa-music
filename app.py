@@ -35,9 +35,7 @@ app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 10050))
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 # SSL required for Aiven
-app.config['MYSQL_SSL'] = {
-    'ca': '/etc/ssl/certs/ca-certificates.crt'
-}
+
 mysql_port = os.environ.get('MYSQL_PORT')
 if mysql_port:
     app.config['MYSQL_PORT'] = int(mysql_port)
