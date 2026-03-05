@@ -15,26 +15,22 @@ try:
     from dotenv import load_dotenv
     load_dotenv()
 except ImportError:
-    pass  # Production mein dotenv nahi chahiye
+    pass
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'sunexa_super_secret_key_2024')
 
-# ── MySQL Config (Auto — Local ya Render dono kaam karega) ────
-# Local pe  → .env file se load hoga
-# Render pe → Render Environment Variables se load hoga
+# ── MySQL Config ──────────────────────────────────────────────
 app.config['MYSQL_HOST']        = os.environ.get('MYSQL_HOST', 'localhost')
 app.config['MYSQL_USER']        = os.environ.get('MYSQL_USER', 'root')
 app.config['MYSQL_PASSWORD']    = os.environ.get('MYSQL_PASSWORD', '')
 app.config['MYSQL_DB']          = os.environ.get('MYSQL_DB', 'sunexa_music')
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+app.config['MYSQL_SSL_DISABLED'] = True
 
-# Aiven ke liye PORT aur SSL (sirf tab jab online ho)
 mysql_port = os.environ.get('MYSQL_PORT')
 if mysql_port:
     app.config['MYSQL_PORT'] = int(mysql_port)
-
-app.config['MYSQL_SSL_DISABLED'] = True
 
 UPLOAD_FOLDER_IMAGES = os.path.join('static', 'uploads', 'images')
 UPLOAD_FOLDER_SONGS  = os.path.join('static', 'uploads', 'songs')
@@ -142,8 +138,9 @@ def signup():
             log_user(uid,'signup',f'New account: {email}')
             flash('Account created! Please log in.','success')
             return redirect(url_for('login'))
-        except:
-            flash('Email already registered.','danger'); return redirect(url_for('signup'))
+        except Exception as e:
+            flash(f'Signup Error: {str(e)}','danger')
+            return redirect(url_for('signup'))
     return render_template('signup.html')
 
 @app.route('/login', methods=['GET','POST'])
@@ -176,7 +173,7 @@ def login():
                 return redirect(url_for('index'))
             flash('Invalid email or password.','danger')
         except Exception as e:
-    flash(f'Error: {str(e)}','danger')
+            flash(f'Login Error: {str(e)}','danger')
     return render_template('login.html')
 
 @app.route('/logout')
