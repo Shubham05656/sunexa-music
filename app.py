@@ -26,7 +26,7 @@ app.config['MYSQL_USER']        = os.environ.get('MYSQL_USER', 'root')
 app.config['MYSQL_PASSWORD']    = os.environ.get('MYSQL_PASSWORD', '')
 app.config['MYSQL_DB']          = os.environ.get('MYSQL_DB', 'sunexa_music')
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
-app.config['MYSQL_SSL'] = {"ssl": {"ca": "ca.pem"}}
+app.config['MYSQL_SSL'] = {'ca': '/etc/ssl/certs/ca-certificates.crt'}
 
 mysql_port = os.environ.get('MYSQL_PORT')
 if mysql_port:
