@@ -351,7 +351,23 @@ function deletePlaylist(id, btn) {
 
 /* ── Sidebar ───────────────────────────────────────────────── */
 function toggleSidebar() {
-  document.getElementById('sidebar')?.classList.toggle('open');
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+  sidebar.classList.toggle('open');
+
+  // Backdrop
+  let backdrop = document.getElementById('sidebarBackdrop');
+  if (sidebar.classList.contains('open')) {
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.id = 'sidebarBackdrop';
+      backdrop.style.cssText = 'position:fixed;inset:0;z-index:99;background:rgba(0,0,0,0.5);';
+      backdrop.onclick = toggleSidebar;
+      document.body.appendChild(backdrop);
+    }
+  } else {
+    backdrop?.remove();
+  }
 }
 
 /* ── Genre page list/grid view ─────────────────────────────── */
