@@ -99,7 +99,7 @@
             {% for song in songs %}
             <tr>
               <td class="mono text-muted">{{ loop.index }}</td>
-              <td><img src="{{ url_for('static', filename=song.image) }}" alt="{{ song.title }}" class="admin-cover" onerror="this.src='https://via.placeholder.com/44x44/1a1a2e/7c3aed?text=♪'"/></td>
+              <td><img src="{{ song.image }}" alt="{{ song.title }}" class="admin-cover" onerror="this.src='https://via.placeholder.com/44x44/1a1a2e/7c3aed?text=♪'"/></td>
               <td class="fw-600">{{ song.title }}</td>
               <td class="text-muted">{{ song.artist }}</td>
               <td><span class="genre-chip">{{ song.genre or 'trending' }}</span></td>
