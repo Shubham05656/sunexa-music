@@ -66,7 +66,7 @@ a:hover { color: var(--accent-2); }
 .auth-sub   { color: var(--text-secondary); margin-bottom: 1.8rem; }
 .auth-form { display: flex; flex-direction: column; gap: 1.1rem; }
 .field-group label { display: block; font-size: .82rem; color: var(--text-secondary); margin-bottom: .4rem; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
-.input-wrap { position: relative; display: flex; align-items: center; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); transition: border-color var(--transition), box-shadow var(--transition); }
+.input-wrap { position: relative; display: flex; align-items: center; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; transition: border-color var(--transition), box-shadow var(--transition); }
 .input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
 .input-wrap > i { padding: 0 .9rem; color: var(--text-muted); font-size: 1rem; flex-shrink: 0; }
 .input-wrap input { flex: 1; background: none; border: none; outline: none; color: var(--text-primary); font-family: inherit; font-size: .95rem; padding: .72rem .5rem .72rem 0; }
@@ -411,6 +411,15 @@ label.form-label { color: var(--text-secondary); font-size: .82rem; font-weight:
   .admin-main { padding: .8rem !important; }
   .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: .5rem !important; }
   .sc-v { font-size: 1.2rem !important; }
+
+  /* Eye button fix — password show/hide */
+  .eye-btn {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    min-width: 40px !important;
+    color: var(--text-muted) !important;
+  }
 }
 
 /* Fix app-shell height on mobile so player is always visible */
@@ -419,4 +428,3 @@ label.form-label { color: var(--text-secondary); font-size: .82rem; font-weight:
     grid-template-rows: 1fr 64px !important;
   }
 }
-.eye-btn { display: flex !important; opacity: 1 !important; }
