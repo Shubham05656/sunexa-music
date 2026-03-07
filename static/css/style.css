@@ -419,3 +419,4 @@ label.form-label { color: var(--text-secondary); font-size: .82rem; font-weight:
     grid-template-rows: 1fr 64px !important;
   }
 }
+.eye-btn { display: flex !important; opacity: 1 !important; }
