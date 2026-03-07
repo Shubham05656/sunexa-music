@@ -1,9 +1,11 @@
 """
-Sunexa Music v4 — Full Stack Music Streaming App (PostgreSQL/Supabase)
+Sunexa Music v4 — Full Stack Music Streaming App (PostgreSQL + Cloudinary)
 """
 import os
 import psycopg2
 import psycopg2.extras
+import cloudinary
+import cloudinary.uploader
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import (Flask, render_template, request, redirect,
@@ -36,8 +38,13 @@ def get_db():
     )
     return conn
 
-UPLOAD_FOLDER_IMAGES = os.path.join('static', 'uploads', 'images')
-UPLOAD_FOLDER_SONGS  = os.path.join('static', 'uploads', 'songs')
+# ── Cloudinary Config ─────────────────────────────────────────
+cloudinary.config(
+    cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key    = os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret = os.environ.get('CLOUDINARY_API_SECRET')
+)
+
 ALLOWED_IMAGE_EXT = {'png','jpg','jpeg','gif','webp'}
 ALLOWED_AUDIO_EXT = {'mp3','ogg','wav','flac'}
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
@@ -417,19 +424,31 @@ def admin_upload_song():
     if not allowed_audio(song_file.filename):
         flash('Invalid audio format.','danger'); return redirect(url_for('admin_dashboard'))
     try:
-        img_name=secure_filename(image_file.filename)
-        sng_name=secure_filename(song_file.filename)
-        image_file.save(os.path.join(UPLOAD_FOLDER_IMAGES,img_name))
-        song_file.save(os.path.join(UPLOAD_FOLDER_SONGS,sng_name))
+        # Upload image to Cloudinary
+        img_result = cloudinary.uploader.upload(
+            image_file,
+            folder='sunexa/images',
+            resource_type='image'
+        )
+        img_url = img_result['secure_url']
+
+        # Upload song to Cloudinary
+        sng_result = cloudinary.uploader.upload(
+            song_file,
+            folder='sunexa/songs',
+            resource_type='video'  # Cloudinary uses 'video' for audio files
+        )
+        sng_url = sng_result['secure_url']
+
         conn=get_db()
         cur=conn.cursor()
         cur.execute("INSERT INTO songs (title,artist,image,file_path,genre) VALUES (%s,%s,%s,%s,%s)",
-                    (title,artist,f'uploads/images/{img_name}',f'uploads/songs/{sng_name}',genre))
+                    (title,artist,img_url,sng_url,genre))
         conn.commit(); cur.close(); conn.close()
         log_admin('song_uploaded',f'{title} by {artist} [{genre}]')
-        flash('Song uploaded!','success')
+        flash('Song uploaded successfully!','success')
     except Exception as e:
-        flash(f'Error: {e}','danger')
+        flash(f'Upload Error: {e}','danger')
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/delete-song', methods=['POST'])
@@ -439,12 +458,9 @@ def admin_delete_song():
     try:
         conn=get_db()
         cur=conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cur.execute("SELECT title,image,file_path FROM songs WHERE id=%s",(sid,))
+        cur.execute("SELECT title FROM songs WHERE id=%s",(sid,))
         song=cur.fetchone()
         if song:
-            for key in ('image','file_path'):
-                path=os.path.join('static',song[key])
-                if os.path.exists(path): os.remove(path)
             cur.execute("DELETE FROM songs WHERE id=%s",(sid,))
             conn.commit()
             log_admin('song_deleted',f'{song["title"]}')
