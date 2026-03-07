@@ -71,7 +71,7 @@ a:hover { color: var(--accent-2); }
 .input-wrap > i { padding: 0 .9rem; color: var(--text-muted); font-size: 1rem; flex-shrink: 0; }
 .input-wrap input { flex: 1; background: none; border: none; outline: none; color: var(--text-primary); font-family: inherit; font-size: .95rem; padding: .72rem .5rem .72rem 0; }
 .input-wrap input::placeholder { color: var(--text-muted); }
-.eye-btn { background: none; border: none; color: var(--text-muted); padding: 0 .9rem; cursor: pointer; transition: color var(--transition); }
+.eye-btn { background: none; border: none; color: var(--text-muted); padding: 0 .9rem; cursor: pointer; transition: color var(--transition); flex-shrink: 0; }
 .eye-btn:hover { color: var(--text-primary); }
 .btn-primary-auth { display: flex; align-items: center; justify-content: center; gap: .5rem; padding: .8rem 1.5rem; background: linear-gradient(135deg, var(--accent), #5b21b6); color: #fff; font-family: inherit; font-size: .98rem; font-weight: 600; border: none; border-radius: var(--radius-sm); cursor: pointer; margin-top: .4rem; transition: filter var(--transition), transform var(--transition), box-shadow var(--transition); box-shadow: 0 4px 20px var(--accent-glow); }
 .btn-primary-auth:hover { filter: brightness(1.12); transform: translateY(-1px); box-shadow: 0 8px 28px var(--accent-glow); }
