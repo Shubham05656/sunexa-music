@@ -97,9 +97,9 @@
         <h2 class="section-title">🕐 Recently Played</h2>
         <div class="song-row">
           {% for song in recently_played %}
-          <div class="song-card" onclick="playSong({{ song.id }},'{{ song.title|e }}','{{ song.artist|e }}','{{ url_for('static', filename=song.image) }}','{{ url_for('static', filename=song.file_path) }}')">
+          <div class="song-card" onclick="playSong({{ song.id }},'{{ song.title|e }}','{{ song.artist|e }}','{{ song.image }}','{{ song.file_path }}')">
             <div class="card-img-wrap">
-              <img src="{{ url_for('static', filename=song.image) }}" alt="{{ song.title }}" onerror="this.src='https://via.placeholder.com/200x200/0f0f1a/7c3aed?text=♪'"/>
+              <img src="{{ song.image }}" alt="{{ song.title }}" onerror="this.src='https://via.placeholder.com/200x200/0f0f1a/7c3aed?text=♪'"/>
               <div class="card-play-overlay"><i class="bi bi-play-fill"></i></div>
             </div>
             <div class="card-info">
@@ -169,9 +169,9 @@
         </div>
         <div class="song-row">
           {% for song in gsongs[:8] %}
-          <div class="song-card" onclick="playSong({{ song.id }},'{{ song.title|e }}','{{ song.artist|e }}','{{ url_for('static', filename=song.image) }}','{{ url_for('static', filename=song.file_path) }}')">
+          <div class="song-card" onclick="playSong({{ song.id }},'{{ song.title|e }}','{{ song.artist|e }}','{{ song.image }}','{{ song.file_path }}')">
             <div class="card-img-wrap">
-              <img src="{{ url_for('static', filename=song.image) }}" alt="{{ song.title }}" onerror="this.src='https://via.placeholder.com/200x200/0f0f1a/7c3aed?text=♪'"/>
+              <img src="{{ song.image }}" alt="{{ song.title }}" onerror="this.src='https://via.placeholder.com/200x200/0f0f1a/7c3aed?text=♪'"/>
               <div class="card-play-overlay"><i class="bi bi-play-fill"></i></div>
             </div>
             <div class="card-info">
@@ -186,7 +186,6 @@
         </div>
       </section>
       {% else %}
-      <!-- No songs at all -->
       <section class="content-section">
         <div class="empty-state">
           <i class="bi bi-music-note-beamed"></i>
@@ -254,17 +253,12 @@
 <audio id="audioPlayer" preload="metadata"></audio>
 
 <style>
-/* ── Genre Sidebar Links ── */
 .genre-side-link{display:flex;align-items:center;gap:.55rem;padding:.45rem .8rem;border-radius:8px;color:var(--text-secondary);font-size:.85rem;font-weight:500;text-decoration:none;transition:background .15s,color .15s;}
 .genre-side-link:hover{background:var(--bg-hover);color:var(--text-primary);}
-
-/* ── Section Header Row ── */
 .section-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
 .section-header-row .section-title{margin-bottom:0;}
 .see-all-btn{display:flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:600;color:var(--text-secondary);text-decoration:none;padding:.3rem .8rem;border-radius:40px;border:1px solid var(--border);transition:all .2s;}
 .see-all-btn:hover{color:var(--text-primary);border-color:rgba(255,255,255,.2);background:var(--bg-hover);}
-
-/* ── Genre Banner Grid ── */
 .genre-banner-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.9rem;}
 .genre-banner{position:relative;border-radius:14px;padding:1.4rem 1.2rem;cursor:pointer;text-decoration:none;overflow:hidden;border:1px solid rgba(255,255,255,.07);transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column;gap:.3rem;min-height:110px;}
 .genre-banner:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 16px 40px rgba(0,0,0,.5);}
