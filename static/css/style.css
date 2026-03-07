@@ -339,10 +339,8 @@ label.form-label { color: var(--text-secondary); font-size: .82rem; font-weight:
 /* ================================================================
    RESPONSIVE — MOBILE PHONE (max 480px)
    ================================================================ */
-@media (max-width: 480px) {
 
-  /* Player — Spotify style compact */
-  :root { --player-h: 64px; }
+@media (max-width: 480px) {
 
   .player-bar {
     display: flex !important;
@@ -352,6 +350,7 @@ label.form-label { color: var(--text-secondary); font-size: .82rem; font-weight:
     padding: 0 .9rem !important;
     gap: .7rem !important;
     height: 64px !important;
+    min-height: 64px !important;
   }
   .player-song-info {
     flex: 1 !important;
@@ -389,7 +388,6 @@ label.form-label { color: var(--text-secondary); font-size: .82rem; font-weight:
     gap: .6rem !important;
   }
 
-  /* Layout */
   .main-content { padding: .8rem .8rem 1.5rem !important; }
   .topbar { padding: .5rem .8rem !important; }
   .section-title { font-size: 1rem !important; }
@@ -397,24 +395,27 @@ label.form-label { color: var(--text-secondary); font-size: .82rem; font-weight:
   .card-title  { font-size: .8rem !important; }
   .card-artist { font-size: .7rem !important; }
 
-  /* Genre hero */
   .genre-hero { flex-direction: column !important; padding: 1rem !important; }
   .gh-left { flex-direction: column !important; gap: .5rem !important; }
   .gh-art  { display: none !important; }
   .gh-title { font-size: 1.5rem !important; }
   .gh-desc  { font-size: .78rem !important; margin-bottom: .6rem !important; }
 
-  /* Genre list */
   .genre-list-header, .genre-list-row { grid-template-columns: 32px 1fr 36px !important; }
   .glr-aname, .glr-dur, .gl-dur { display: none !important; }
   .glr-song img { width: 36px !important; height: 36px !important; }
 
-  /* Flash */
   .flash-container { right: .5rem !important; left: .5rem !important; }
   .flash-toast { font-size: .8rem !important; padding: .55rem .8rem !important; }
 
-  /* Admin */
   .admin-main { padding: .8rem !important; }
   .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: .5rem !important; }
   .sc-v { font-size: 1.2rem !important; }
+}
+
+/* Fix app-shell height on mobile so player is always visible */
+@media (max-width: 480px) {
+  .app-shell {
+    grid-template-rows: 1fr 64px !important;
+  }
 }
